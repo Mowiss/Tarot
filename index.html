@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tarot</title>
+<style>
+* { box-sizing: border-box; }
+body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; color: white; }
+
+/* Layout principal : pioche fixe à gauche + colonnes cartes */
+#layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* Pioche fixe */
+.pioche-wrap {
+  position: relative;
+  width: 110px;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+.pioche-wrap::before,
+.pioche-wrap::after {
+  content: '';
+  position: absolute;
+  width: 110px; height: 100%;
+  top: 0; left: 0;
+  border-radius: 10px;
+  background: #1a0a2e;
+  border: 1px solid #4a2d7a;
+}
+.pioche-wrap::after  { transform: translate(3px, 3px);  z-index: 0; }
+.pioche-wrap::before { transform: translate(6px, 6px); z-index: 0; }
+.pioche-btn {
+  position: relative; z-index: 1;
+  margin: 0; padding: 0; border: none; background: none;
+  cursor: pointer; width: 110px; display: block;
+  transition: transform 0.1s;
+}
+.pioche-btn:hover { transform: scale(1.03); }
+.pioche-btn svg { display: block; width: 110px; height: auto; }
+.pioche-btn.vide { filter: grayscale(1) brightness(0.35); cursor: pointer; }
+
+/* Zone cartes tirées : ligne horizontale scrollable */
+#cartes-zone {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  align-items: flex-start;
+  overflow-x: auto;
+  flex: 1;
+}
+
+/* Colonne carte + oracle */
+.col-carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.carte-slot {
+  width: 110px;
+  cursor: grab;
+  user-select: none;
+}
+.carte-slot.dragging { opacity: 0.3; }
+.carte-face { width: 110px; border-radius: 10px; overflow: hidden; display: block; }
+.carte-face svg { display: block; width: 100%; height: auto; }
+.carte-face.endroit { box-shadow: 0 0 16px #3a6abf99; }
+.carte-face.envers  { box-shadow: 0 0 16px #bf3a3a99; }
+
+#oracles-zone {
+  margin-top: 16px;
+  max-width: calc(5 * 110px + 6 * 14px);
+  margin-left: 134px;
+}
+
+.oracle-inline {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border-radius: 0 6px 6px 0;
+  background: #1a0a2e99;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.oracle-inline.endroit { border-left: 3px solid #3a6abf; }
+.oracle-inline.envers  { border-left: 3px solid #bf3a3a; }
+.oracle-titre { font-size: 11px; margin-bottom: 4px; letter-spacing: 1px; }
+.oracle-inline.endroit .oracle-titre { color: #7ab0e0; }
+.oracle-inline.envers  .oracle-titre { color: #e07070; }
+.oracle-texte { color: #ccc; }
+
+/* Drop zone entre colonnes */
+.drop-zone {
+  width: 14px;
+  flex-shrink: 0;
+  align-self: stretch;
+  min-height: 170px;
+  position: relative;
+  cursor: default;
+}
+.drop-zone.active::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 5%; height: 90%; width: 3px;
+  margin-left: -1.5px;
+  background: #9b7de0;
+  border-radius: 3px;
+}
+
+/* Animations */
+.flip-in { animation: flipin .4s ease; }
+@keyframes flipin {
+  0%   { transform: rotateY(90deg) scale(.9); opacity: 0; }
+  100% { transform: rotateY(0)     scale(1);  opacity: 1; }
+}
+
+/* ↺ brillant */
+@keyframes pulse {
+  0%,100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+.pioche-btn.vide .refresh-label { animation: pulse 1.8s ease infinite; }
+</style>
+</head>
+<body>
+<div id="layout">
+  <div class="pioche-wrap" id="pioche-wrap"></div>
+  <div id="cartes-zone"></div>
+</div>
+<div id="oracles-zone"></div>
+<script>
+
+// ── couleurs ──
+function C(inv) {
+  return inv
+    ? {bg:'#2e0a0a',ca:'#bf3a3a',c2:'#7a2020',au:'#bf3a3a',no:'#e07070',nu:'#a04040'}
+    : {bg:'#0a1a2e',ca:'#3a6abf',c2:'#204a7a',au:'#3a6abf',no:'#7ab0e0',nu:'#406090'}
+}
+
+// ── SVG dos ──
+function dos(n, vide) {
+  var lbl = vide
+    ? '<text x="100" y="170" text-anchor="middle" dominant-baseline="central" font-size="90" fill="#9b7de0" class="refresh-label" font-family="serif">↺</text>'
+    : '<text x="100" y="296" text-anchor="middle" font-size="14" fill="#9b7de0" font-family="serif">'+n+'</text>'
+  return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect width="200" height="320" rx="10" fill="#1a0a2e"/>'
+    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="#7c5cbf" stroke-width="1"/>'
+    +'<rect x="16" y="16" width="168" height="288" rx="5" fill="none" stroke="#4a2d7a" stroke-width=".5"/>'
+    +'<circle cx="100" cy="160" r="55" fill="none" stroke="#7c5cbf" stroke-width=".8"/>'
+    +'<circle cx="100" cy="160" r="38" fill="none" stroke="#4a2d7a" stroke-width=".5"/>'
+    +'<polygon points="100,110 113,148 152,148 121,172 132,210 100,186 68,210 79,172 48,148 87,148" fill="none" stroke="#9b7de0" stroke-width="1"/>'
+    +'<circle cx="100" cy="160" r="6" fill="#7c5cbf"/>'
+    +lbl
+    +'</svg>'
+}
+
+// ── SVG majeure ──
+function svgMaj(sym, nom, num, inv) {
+  var c = C(inv)
+  return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
+    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<circle cx="100" cy="145" r="55" fill="none" stroke="'+c.au+'" stroke-width=".5" opacity=".4"/>'
+    +'<circle cx="100" cy="145" r="40" fill="none" stroke="'+c.au+'" stroke-width=".5" opacity=".25"/>'
+    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="64" font-family="serif">'+sym+'</text>'
+    +'<line x1="30" y1="232" x2="170" y2="232" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<text x="100" y="250" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif" letter-spacing="1.5">'+nom.toUpperCase()+'</text>'
+    +'<text x="100" y="264" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif">'+num+'</text>'
+    +'</svg>'
+}
+
+// ── SVG figure ──
+var CHESS = {Valet:'&#9817;',Cavalier:'&#9816;',Dame:'&#9813;',Roi:'&#9812;'}
+function svgFig(sym, val, nom, inv) {
+  var c = C(inv), ch = CHESS[val]||'&#9823;'
+  return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
+    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="148" fill="'+c.au+'" opacity=".15" font-family="serif">'+ch+'</text>'
+    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="44" font-family="serif">'+sym+'</text>'
+    +'<line x1="30" y1="245" x2="170" y2="245" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<text x="100" y="260" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif">'+nom.toUpperCase()+'</text>'
+    +'<text x="100" y="274" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif">'+val+'</text>'
+    +'</svg>'
+}
+
+// ── SVG numérique ──
+var TRAME = {
+  1:[[100,155]],2:[[100,100],[100,210]],3:[[100,90],[100,155],[100,220]],
+  4:[[65,100],[135,100],[65,210],[135,210]],
+  5:[[65,90],[135,90],[100,155],[65,220],[135,220]],
+  6:[[65,90],[135,90],[65,155],[135,155],[65,220],[135,220]],
+  7:[[65,80],[135,80],[65,140],[135,140],[100,110],[65,200],[135,200]],
+  8:[[65,80],[135,80],[65,135],[135,135],[65,190],[135,190],[65,245],[135,245]],
+  9:[[65,75],[135,75],[65,128],[135,128],[100,102],[65,182],[135,182],[65,235],[135,235]],
+  10:[[65,72],[135,72],[65,118],[135,118],[65,164],[135,164],[65,210],[135,210],[65,256],[135,256]]
+}
+function svgNum(sym, nom, val, inv) {
+  var c = C(inv), n = val==='As'?1:parseInt(val), pos = TRAME[n]||[[100,155]], s=''
+  for(var i=0;i<pos.length;i++) s+='<text x="'+pos[i][0]+'" y="'+pos[i][1]+'" text-anchor="middle" dominant-baseline="central" font-size="24" font-family="serif">'+sym+'</text>'
+  return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
+    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +s
+    +'<line x1="30" y1="274" x2="170" y2="274" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<text x="100" y="285" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif">'+nom.toUpperCase()+' '+val+'</text>'
+    +'</svg>'
+}
+
+// ── DONNÉES ──
+var D = [
+  {n:"N°0 Le Mat",s:"🎭",t:"M",o:"Les cartes montrent l'arrivée d'un inconnu loufoque. Acceptez son aide, il vous sera utile pour votre prochaine quête.",oi:"Prenez garde à cet inconnu excentrique. Sous ses airs étranges, il cherche à vous tromper (vol, cannibalisme...)."},
+  {n:"N°1 Le Bateleur",s:"🪄",t:"M",o:"Un marchand ambulant croisera votre route. Ses objets magiques sont rares et proposés à des prix raisonnables.",oi:"Un marchand vous proposera de prétendues \"merveilles\". Ne soyez pas dupes : ses objets sont défectueux ou maudits."},
+  {n:"N°2 La Papesse",s:"📿",t:"M",o:"Vous découvrirez l'entrée d'une ruine ou d'une grotte oubliée. L'endroit est inhabité, parfait pour se reposer et fouiller.",oi:"Vous trouverez des ruines antiques. N'y baissez pas votre garde : l'endroit grouille déjà de squatteurs hostiles."},
+  {n:"N°3 L'Impératrice",s:"👸🏼",t:"M",o:"Un émissaire viendra à vous avec une invitation prestigieuse ou un héritage, vous ouvrant l'accès à de nouvelles ressources.",oi:"Un messager vous remettra un ultimatum ou un ordre trompeur. C'est une manipulation pour vous pousser au conflit."},
+  {n:"N°4 L'Empereur",s:"🤴🏻",t:"M",o:"Des rumeurs d'un coup d'État viendront jusqu'à vous. Allez-vous aider, frapper un grand coup ou ignorer ? Le choix vous appartient.",oi:"Vous entendrez des rumeurs insistantes sur un coup d'État. Ne perdez pas votre temps, elles sont sans aucun fondement."},
+  {n:"N°5 Le Pape",s:"⛪",t:"M",o:"Vous ferez la rencontre de croyants sincères. Leur mouvement est bienveillant et leur communauté est prête à vous aider.",oi:"Vous croiserez des prêcheurs. Fuyez-les : c'est une secte malfaisante qui utilise la supercherie pour convertir."},
+  {n:"N°6 L'Amoureux",s:"❤️",t:"M",o:"Vous croiserez un être ou une créature en difficulté. Aidez-la, et elle deviendra un précieux ami ou familier.",oi:"Une personne ou une créature demandera votre amitié. Méfiez-vous d'elle, elle vous trahira à la première occasion."},
+  {n:"N°7 Le Chariot",s:"🛒",t:"M",o:"Le voyage s'accélère. Vous trouverez une monture, un véhicule ou un vaisseau en bon état de marche.",oi:"Vous tomberez sur un véhicule ou une bête de somme. Hélas, l'état général est tel que vous n'en tirerez que quelques pièces."},
+  {n:"N°8 La Justice",s:"⚖️",t:"M",o:"La loi est de sortie. Vous croiserez une milice ou des chasseurs de primes en pleine traque d'un individu.",oi:"La justice est à vos trousses. Une milice ou des chasseurs de primes sont activement à la recherche de votre groupe."},
+  {n:"N°9 L'Hermite",s:"🐚",t:"M",o:"Un autochtone vous proposera de lire l'avenir de l'un d'entre vous. Écoutez-le, sa prédiction s'avérera exacte.",oi:"Un devin local vous offrira ses services. C'est un charlatan qui vous manipulera pour vous extorquer."},
+  {n:"N°10 La Roue de la Fortune",s:"🛞",t:"M",o:"La chance vous sourit. Vous trouverez exactement ce qui vous manque, ou ferez une découverte inattendue.",oi:"La roue tourne mal. Vous avez perdu un objet de votre paquetage. Vous vous en rendrez compte quand il vous manquera cruellement."},
+  {n:"N°11 La Force",s:"💪🏻",t:"M",o:"Vous ferez face à une grande épreuve de FORCE, mais rassurez-vous : vous disposerez d'un avantage décisif pour la surmonter.",oi:"Une épreuve de FORCE se dresse devant vous. La lutte sera âpre, car vous devrez la surmonter avec un sérieux handicap."},
+  {n:"N°12 Le Pendu",s:"➰",t:"M",o:"Vous découvrirez des prisonniers dans l'incapacité de se défendre. Les signes sont clairs : ils sont innocents.",oi:"Vous croiserez des captifs réclamant de l'aide. Ne soyez pas crédules, ce sont de vils manants qui n'attendent qu'une ouverture pour attaquer."},
+  {n:"N°13 La Mort",s:"💀",t:"M",o:"Vous découvrirez des cadavres à piller. Ouvrez l'œil, car la piste menant à leurs coupables est encore fraîche.",oi:"Prudence dans cette région. Vous entrez dans une zone où il est possible de croiser un adversaire légendaire redoutable."},
+  {n:"N°14 La Tempérance",s:"🫗",t:"M",o:"Des indices viendront à vous. Ils vous aideront à résoudre vos problèmes ou vous mèneront vers la richesse.",oi:"Vous entendrez des indices trompeurs. Si vous les suivez, ils vous pousseront vers les mauvais choix ou votre perte."},
+  {n:"N°15 Le Diable",s:"😈",t:"M",o:"Le passé vous rattrape. Vos dernières actions ont fait du tort, et les victimes chercheront à se venger.",oi:"Vos actes récents ont été bénéfiques. Les communautés voisines vous en sont reconnaissantes, n'hésitez pas à les croiser."},
+  {n:"N°16 La Maison Dieu",s:"🗼",t:"M",o:"L'entrée d'un donjon ou d'un lieu inexploré s'offre à vous. Bonne nouvelle : la difficulté y sera étonnamment faible.",oi:"Une porte s'ouvre vers l'inconnu. Ce donjon ou sanctuaire inexploré sera d'une très grande difficulté."},
+  {n:"N°17 L'Étoile",s:"⭐",t:"M",o:"Les astres veillent sur vous. La prochaine nuit passée dans un vrai lit régénérera la totalité du groupe.",oi:"Levez les yeux lorsque la nuit tombera. Vous serez les témoins du passage d'une comète millénaire dans le ciel étoilé."},
+  {n:"N°18 La Lune",s:"🌒",t:"M",o:"La prochaine nuit s'annonce étrange. Des rêves ou des événements inattendus vous offriront des bonus et des révélations.",oi:"La nuit prochaine sera agitée. Le repos laissera place à un cauchemar commun qui tourmentera l'esprit de tout le groupe."},
+  {n:"N°19 Le Soleil",s:"☀️",t:"M",o:"La météo est superbe. Tant que vous serez en extérieur, votre PERCEPTION et/ou votre CHARISME seront améliorés.",oi:"Le ciel est dégagé, mais le soleil est de plomb. En extérieur, votre FORCE et/ou votre RÉSISTANCE seront pénalisées."},
+  {n:"N°20 Le Jugement",s:"👨🏻‍⚖️",t:"M",o:"On vous rappelle à un concours que vous aviez oublié. Un message vous invite à récupérer votre lot... et cette fois, c'est pour de vrai.",oi:"On vous annonce vainqueur d'un concours oublié. Un message vous prie de récupérer le lot, mais c'est un piège."},
+  {n:"N°21 Le Monde",s:"🌍",t:"M",o:"L'atmosphère se calme. La météo va changer pour devenir peu à peu clémente et agréable pour voyager.",oi:"Les éléments se déchaînent. La météo va brutalement évoluer vers un chaos absolu. Trouvez un abri au plus vite."},
+  {n:"🌿As",v:"As",b:"🪵",t:"N",o:"La steppe aride. Il n'y a rien ici. Ni mob ni objet."},
+  {n:"🌿2",v:"2",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★."},
+  {n:"🌿3",v:"3",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★."},
+  {n:"🌿4",v:"4",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★."},
+  {n:"🌿5",v:"5",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★."},
+  {n:"🌿6",v:"6",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★★."},
+  {n:"🌿7",v:"7",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★★★."},
+  {n:"🌿8",v:"8",b:"🪵",t:"N",o:"Vous approchez d'un lieu extérieur, jardin, clairière, cimetière…"},
+  {n:"🌿9",v:"9",b:"🪵",t:"N",o:"Vous approchez d'une petite bâtisse (en état ou ruine)."},
+  {n:"🌿10",v:"10",b:"🪵",t:"N",o:"Vous approchez d'une grande bâtisse (en état ou ruine)."},
+  {n:"🌿Valet",v:"Valet",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public (en état ou ruine)."},
+  {n:"🌿Cavalier",v:"Cavalier",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public (en état ou ruine)."},
+  {n:"🌿Dame",v:"Dame",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment religieux (en état ou ruine)."},
+  {n:"🌿Roi",v:"Roi",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment militaire (en état ou ruine)."},
+  {n:"🏆As",v:"As",b:"🍷",t:"N",o:"Découverte d'un message, information, rumeur, secret, détail intriguant..."},
+  {n:"🏆2",v:"2",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★ inadapté au biome."},
+  {n:"🏆3",v:"3",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★ inadapté au biome."},
+  {n:"🏆4",v:"4",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ avec un détail intriguant."},
+  {n:"🏆5",v:"5",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ avec un détail intriguant."},
+  {n:"🏆6",v:"6",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★, mais il n'est pas comme d'habitude."},
+  {n:"🏆7",v:"7",b:"🍷",t:"N",o:"Vous rencontrez un mob ★★★★ mort... Mais qui a tué une telle créature ?"},
+  {n:"🏆8",v:"8",b:"🍷",t:"N",o:"Il n'y a plus de saison ! Le climat change brutalement et anormalement..."},
+  {n:"🏆9",v:"9",b:"🍷",t:"N",o:"Découverte de l'entrée d'une grotte. Mais où mène-t-elle ?"},
+  {n:"🏆10",v:"10",b:"🍷",t:"N",o:"Vous voyez un prospectus ou pancarte publicitaire annonçant un événement."},
+  {n:"🏆Valet",v:"Valet",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs zikos qui chantent les nouvelles de la contrée."},
+  {n:"🏆Cavalier",v:"Cavalier",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs zikos qui chantent les nouvelles de la contrée."},
+  {n:"🏆Dame",v:"Dame",b:"🍷",t:"F",o:"Vous rencontrez un ou des PNJ(s) issu(s) d'une guilde / secte."},
+  {n:"🏆Roi",v:"Roi",b:"🍷",t:"F",o:"Vous serez confronté de près ou de loin à un complot politique..."},
+  {n:"⚔️As",v:"As",b:"⚔️",t:"N",o:"Le calme plat."},
+  {n:"⚔️2",v:"2",b:"⚔️",t:"N",o:"Vous rencontrez un ou des mob(s) ★."},
+  {n:"⚔️3",v:"3",b:"⚔️",t:"N",o:"Vous rencontrez un ou des mob(s) ★."},
+  {n:"⚔️4",v:"4",b:"⚔️",t:"N",o:"Vous vous faites attaquer par un ou des mob(s) ★★."},
+  {n:"⚔️5",v:"5",b:"⚔️",t:"N",o:"Vous vous faites attaquer par un ou des mob(s) ★★."},
+  {n:"⚔️6",v:"6",b:"⚔️",t:"N",o:"Vous tombez dans une embuscade tendue par un ou des mob(s) ★★★."},
+  {n:"⚔️7",v:"7",b:"⚔️",t:"N",o:"Vous croisez la route d'un mob ★★★★ en pleine chasse ou en train de faire la sieste."},
+  {n:"⚔️8",v:"8",b:"⚔️",t:"N",o:"La flore locale est impressionnante mais ralentit votre progression."},
+  {n:"⚔️9",v:"9",b:"⚔️",t:"N",o:"La faune vous mène la vie dure (mobs ★ type insecte et nuisibles)."},
+  {n:"⚔️10",v:"10",b:"⚔️",t:"N",o:"La soif, la faim ou le manque de sommeil vous tiraillent de plus en plus."},
+  {n:"⚔️Valet",v:"Valet",b:"⚔️",t:"F",o:"Guet-apens de bandits de grand chemin ! De mauvais gars pas commodes vous attaquent !"},
+  {n:"⚔️Cavalier",v:"Cavalier",b:"⚔️",t:"F",o:"Guet-apens de bandits de grand chemin ! De mauvais gars pas commodes vous attaquent !"},
+  {n:"⚔️Dame",v:"Dame",b:"⚔️",t:"F",o:"Alerte ! Damoiselle/damoiseau en détresse ! (Mais c'est peut-être un piège.)"},
+  {n:"⚔️Roi",v:"Roi",b:"⚔️",t:"F",o:"Vous rencontrez un voyageur solitaire... Qu'il ne vaut mieux pas taquiner."},
+  {n:"💰As",v:"As",b:"🪙",t:"N",o:"Vous trouvez un objet plus ou moins précieux posé là, sans surveillance."},
+  {n:"💰2",v:"2",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★ en possession d'objets ou trésors."},
+  {n:"💰3",v:"3",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★ en possession d'objets ou trésors."},
+  {n:"💰4",v:"4",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ en possession d'objets ou trésors."},
+  {n:"💰5",v:"5",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ en possession d'objets ou trésors."},
+  {n:"💰6",v:"6",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★ en possession d'objets ou trésors."},
+  {n:"💰7",v:"7",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★★ en possession d'objets ou trésors."},
+  {n:"💰8",v:"8",b:"🪙",t:"N",o:"Vous croisez la route d'un marchand ambulant."},
+  {n:"💰9",v:"9",b:"🪙",t:"N",o:"Vous croisez une petite auberge, pension, motel (abandonné ou en état)."},
+  {n:"💰10",v:"10",b:"🪙",t:"N",o:"Vous croisez une grande auberge, pension, motel (abandonné ou en état)."},
+  {n:"💰Valet",v:"Valet",b:"🪙",t:"F",o:"Vous croisez un petit convoi gardé."},
+  {n:"💰Cavalier",v:"Cavalier",b:"🪙",t:"F",o:"Vous croisez un grand convoi gardé."},
+  {n:"💰Dame",v:"Dame",b:"🪙",t:"F",o:"Vous rencontrez un ou des PNJ(s) richement habillé(s) et équipé(s)."},
+  {n:"💰Roi",v:"Roi",b:"🪙",t:"F",o:"Vous rencontrez un bourgeois et son ou ses garde(s) du corps."}
+]
+
+// ── ÉTAT ──
+var tirage=[], pioche=[], drag=null
+
+// ── INIT ──
+function init() {
+  tirage=[]; pioche=[]
+  var idx=[]
+  while(idx.length<5){ var r=Math.floor(Math.random()*D.length); if(idx.indexOf(r)<0) idx.push(r) }
+  for(var i=0;i<idx.length;i++){
+    var c=D[idx[i]], inv=Math.random()>.5
+    pioche.push({c:c,inv:inv,rev:false,nouveau:false})
+  }
+  rendu()
+}
+
+// ── RENDU PIOCHE ──
+function renduPioche() {
+  var wrap = document.getElementById('pioche-wrap')
+  wrap.innerHTML = ''
+  // couches d'épaisseur via divs
+  var b1 = document.createElement('div')
+  b1.style.cssText = 'position:absolute;width:110px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(6px,6px);z-index:0'
+  var b2 = document.createElement('div')
+  b2.style.cssText = 'position:absolute;width:110px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(3px,3px);z-index:0'
+  var btn = document.createElement('button')
+  var vide = pioche.length === 0
+  btn.className = 'pioche-btn' + (vide ? ' vide' : '')
+  btn.title = vide ? 'Nouveau tirage' : ('Tirer une carte ('+pioche.length+' restante'+(pioche.length>1?'s':'')+')')
+  btn.innerHTML = dos(pioche.length, vide)
+  btn.onclick = vide ? init : tirer
+  btn.style.position = 'relative'
+  btn.style.zIndex = '1'
+  if (!vide) {
+    wrap.appendChild(b1)
+    wrap.appendChild(b2)
+  }
+  wrap.appendChild(btn)
+}
+
+// ── RENDU CARTES ──
+function rendu() {
+  renduPioche()
+  var z = document.getElementById('cartes-zone')
+  z.innerHTML = ''
+  var oz = document.getElementById('oracles-zone')
+  oz.innerHTML = ''
+
+  for(var i=0;i<tirage.length;i++){
+    z.appendChild(mkDZ(i))
+    z.appendChild(mkSlot(i))
+    oz.appendChild(mkOracle(i))
+  }
+  if(tirage.length>0) z.appendChild(mkDZ(tirage.length))
+}
+
+function mkDZ(pos){
+  var d=document.createElement('div')
+  d.className='drop-zone'; d.dataset.p=pos
+  d.ondragover=function(e){ e.preventDefault(); clearDZ(); d.classList.add('active') }
+  d.ondragleave=function(){ d.classList.remove('active') }
+  d.ondrop=function(e){ e.preventDefault(); d.classList.remove('active'); if(drag!==null) inserer(drag,pos) }
+  return d
+}
+
+function mkSlot(i){
+  var t=tirage[i]
+  var s=document.createElement('div')
+  s.className='carte-slot'; s.dataset.i=i; s.draggable=true
+  var f=document.createElement('div')
+  f.className='carte-face '+(t.inv?'envers':'endroit')
+  f.innerHTML=svgRevele(i)
+  if(t.nouveau){ f.classList.add('flip-in'); t.nouveau=false }
+  s.appendChild(f)
+  s.ondragstart=function(e){ drag=i; setTimeout(function(){ s.classList.add('dragging') },0); e.dataTransfer.effectAllowed='move' }
+  s.ondragend=function(){ s.classList.remove('dragging'); clearDZ(); drag=null }
+  return s
+}
+
+var NOMS_COULEURS = {'🌿':'Bâtons','🏆':'Coupes','⚔️':'Épées','💰':'Deniers'}
+var NOMS_VALEURS = {'As':'As','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10','Valet':'Valet','Cavalier':'Cavalier','Dame':'Dame','Roi':'Roi'}
+var PREP_VALEURS = {'As':'d\'','2':'de ','3':'de ','4':'de ','5':'de ','6':'de ','7':'de ','8':'de ','9':'de ','10':'de ','Valet':'de ','Cavalier':'de ','Dame':'de ','Roi':'de '}
+
+function nomCarte(c) {
+  if (c.t === 'M') return c.n
+  var coul = ''
+  for (var k in NOMS_COULEURS) { if (c.n.indexOf(k) === 0) { coul = NOMS_COULEURS[k]; break } }
+  var prep = PREP_VALEURS[c.v] || 'de '
+  return c.v + ' ' + prep + coul
+}
+
+function mkOracle(i){
+  var t=tirage[i], c=t.c
+  var txt=(t.inv&&c.oi)?c.oi:c.o
+  var sens=t.inv?'↕ Inversée':'↑ Endroit'
+  var ob=document.createElement('div')
+  ob.className='oracle-inline '+(t.inv?'envers':'endroit')
+  ob.innerHTML='<div class="oracle-titre">'+nomCarte(c)+' — '+sens+'</div><div class="oracle-texte">'+txt+'</div>'
+  return ob
+}
+
+function svgRevele(i){
+  var t=tirage[i], c=t.c
+  if(c.t==='M'){
+    var nom=c.n.replace(/^N°\d+\s/,''), m=c.n.match(/^N°(\d+)/), num=m?('N°'+m[1]):''
+    return svgMaj(c.s,nom,num,t.inv)
+  } else if(c.t==='F'){
+    return svgFig(c.b,c.v,c.n,t.inv)
+  } else {
+    return svgNum(c.b,c.n,c.v,t.inv)
+  }
+}
+
+function clearDZ(){ document.querySelectorAll('.drop-zone').forEach(function(d){ d.classList.remove('active') }) }
+
+function tirer(){
+  if(!pioche.length) return
+  var c=pioche.shift(); c.rev=true; c.nouveau=true
+  tirage.push(c); rendu()
+}
+
+function inserer(src,pos){
+  var item=tirage.splice(src,1)[0]
+  var np=pos>src?pos-1:pos
+  tirage.splice(np,0,item)
+  rendu()
+}
+
+init()
+</script>
+</body>
+</html>
