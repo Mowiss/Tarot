@@ -5,13 +5,24 @@
 <title>Tarot</title>
 <style>
 * { box-sizing: border-box; }
-body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; color: white; }
+body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; color: white; position: relative; }
+
+#filigrane {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
 
 /* Layout principal : pioche fixe à gauche + colonnes cartes */
 #layout {
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Pioche fixe */
@@ -129,11 +140,162 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
 </style>
 </head>
 <body>
-<div id="layout">
+<div id="filigrane">
+<svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<style>
+.fil-hex{stroke:#2a1045;stroke-width:0.6;fill:none;opacity:0.55;}
+.fil-circ{stroke:#4a2080;stroke-width:0.5;fill:none;opacity:0.35;}
+.fil-glyph{stroke:#5530a0;stroke-width:0.7;fill:none;opacity:0.3;}
+.fil-tri{stroke:#ff3080;stroke-width:0.5;fill:none;opacity:0.18;}
+.fil-circuit{stroke:#00d4ff;stroke-width:0.7;fill:none;opacity:0.12;}
+.fil-node{fill:#00d4ff;opacity:0.18;}
+.fil-rune{fill:none;stroke:#9b4fd4;stroke-width:0.8;opacity:0.25;}
+.fil-dot{fill:#7c5cbf;opacity:0.55;}
+.fil-axis{stroke:#5530a0;stroke-width:0.5;fill:none;opacity:0.22;}
+</style>
+
+<!-- Grille hexagonale couvrant tout le fond -->
+<g class="fil-hex">
+  <polygon points="60,20 80,9 100,20 100,42 80,53 60,42"/><polygon points="100,20 120,9 140,20 140,42 120,53 100,42"/><polygon points="140,20 160,9 180,20 180,42 160,53 140,42"/><polygon points="180,20 200,9 220,20 220,42 200,53 180,42"/><polygon points="220,20 240,9 260,20 260,42 240,53 220,42"/><polygon points="260,20 280,9 300,20 300,42 280,53 260,42"/><polygon points="300,20 320,9 340,20 340,42 320,53 300,42"/><polygon points="340,20 360,9 380,20 380,42 360,53 340,42"/><polygon points="380,20 400,9 420,20 420,42 400,53 380,42"/><polygon points="420,20 440,9 460,20 460,42 440,53 420,42"/><polygon points="460,20 480,9 500,20 500,42 480,53 460,42"/><polygon points="500,20 520,9 540,20 540,42 520,53 500,42"/><polygon points="540,20 560,9 580,20 580,42 560,53 540,42"/><polygon points="580,20 600,9 620,20 620,42 600,53 580,42"/><polygon points="620,20 640,9 660,20 660,42 640,53 620,42"/><polygon points="660,20 680,9 700,20 700,42 680,53 660,42"/><polygon points="700,20 720,9 740,20 740,42 720,53 700,42"/><polygon points="740,20 760,9 780,20 780,42 760,53 740,42"/><polygon points="780,20 800,9 820,20 820,42 800,53 780,42"/><polygon points="820,20 840,9 860,20 860,42 840,53 820,42"/><polygon points="860,20 880,9 900,20 900,42 880,53 860,42"/><polygon points="900,20 920,9 940,20 940,42 920,53 900,42"/><polygon points="940,20 960,9 980,20 980,42 960,53 940,42"/><polygon points="980,20 1000,9 1020,20 1020,42 1000,53 980,42"/><polygon points="1020,20 1040,9 1060,20 1060,42 1040,53 1020,42"/><polygon points="1060,20 1080,9 1100,20 1100,42 1080,53 1060,42"/><polygon points="1100,20 1120,9 1140,20 1140,42 1120,53 1100,42"/>
+  <polygon points="40,53 60,42 80,53 80,75 60,86 40,75"/><polygon points="80,53 100,42 120,53 120,75 100,86 80,75"/><polygon points="120,53 140,42 160,53 160,75 140,86 120,75"/><polygon points="160,53 180,42 200,53 200,75 180,86 160,75"/><polygon points="200,53 220,42 240,53 240,75 220,86 200,75"/><polygon points="240,53 260,42 280,53 280,75 260,86 240,75"/><polygon points="280,53 300,42 320,53 320,75 300,86 280,75"/><polygon points="320,53 340,42 360,53 360,75 340,86 320,75"/><polygon points="360,53 380,42 400,53 400,75 380,86 360,75"/><polygon points="400,53 420,42 440,53 440,75 420,86 400,75"/><polygon points="440,53 460,42 480,53 480,75 460,86 440,75"/><polygon points="480,53 500,42 520,53 520,75 500,86 480,75"/><polygon points="520,53 540,42 560,53 560,75 540,86 520,75"/><polygon points="560,53 580,42 600,53 600,75 580,86 560,75"/><polygon points="600,53 620,42 640,53 640,75 620,86 600,75"/><polygon points="640,53 660,42 680,53 680,75 660,86 640,75"/><polygon points="680,53 700,42 720,53 720,75 700,86 680,75"/><polygon points="720,53 740,42 760,53 760,75 740,86 720,75"/><polygon points="760,53 780,42 800,53 800,75 780,86 760,75"/><polygon points="800,53 820,42 840,53 840,75 820,86 800,75"/><polygon points="840,53 860,42 880,53 880,75 860,86 840,75"/><polygon points="880,53 900,42 920,53 920,75 900,86 880,75"/><polygon points="920,53 940,42 960,53 960,75 940,86 920,75"/><polygon points="960,53 980,42 1000,53 1000,75 980,86 960,75"/><polygon points="1000,53 1020,42 1040,53 1040,75 1020,86 1000,75"/><polygon points="1040,53 1060,42 1080,53 1080,75 1060,86 1040,75"/><polygon points="1080,53 1100,42 1120,53 1120,75 1100,86 1080,75"/><polygon points="1120,53 1140,42 1160,53 1160,75 1140,86 1120,75"/>
+  <polygon points="60,86 80,75 100,86 100,108 80,119 60,108"/><polygon points="100,86 120,75 140,86 140,108 120,119 100,108"/><polygon points="140,86 160,75 180,86 180,108 160,119 140,108"/><polygon points="180,86 200,75 220,86 220,108 200,119 180,108"/><polygon points="220,86 240,75 260,86 260,108 240,119 220,108"/><polygon points="260,86 280,75 300,86 300,108 280,119 260,108"/><polygon points="300,86 320,75 340,86 340,108 320,119 300,108"/><polygon points="340,86 360,75 380,86 380,108 360,119 340,108"/><polygon points="380,86 400,75 420,86 420,108 400,119 380,108"/><polygon points="420,86 440,75 460,86 460,108 440,119 420,108"/><polygon points="460,86 480,75 500,86 500,108 480,119 460,108"/><polygon points="500,86 520,75 540,86 540,108 520,119 500,108"/><polygon points="540,86 560,75 580,86 580,108 560,119 540,108"/><polygon points="580,86 600,75 620,86 620,108 600,119 580,108"/><polygon points="620,86 640,75 660,86 660,108 640,119 620,108"/><polygon points="660,86 680,75 700,86 700,108 680,119 660,108"/><polygon points="700,86 720,75 740,86 740,108 720,119 700,108"/><polygon points="740,86 760,75 780,86 780,108 760,119 740,108"/><polygon points="780,86 800,75 820,86 820,108 800,119 780,108"/><polygon points="820,86 840,75 860,86 860,108 840,119 820,108"/><polygon points="860,86 880,75 900,86 900,108 880,119 860,108"/><polygon points="900,86 920,75 940,86 940,108 920,119 900,108"/><polygon points="940,86 960,75 980,86 980,108 960,119 940,108"/><polygon points="980,86 1000,75 1020,86 1020,108 1000,119 980,108"/><polygon points="1020,86 1040,75 1060,86 1060,108 1040,119 1020,108"/><polygon points="1060,86 1080,75 1100,86 1100,108 1080,119 1060,108"/><polygon points="1100,86 1120,75 1140,86 1140,108 1120,119 1100,108"/>
+  <polygon points="40,119 60,108 80,119 80,141 60,152 40,141"/><polygon points="80,119 100,108 120,119 120,141 100,152 80,141"/><polygon points="120,119 140,108 160,119 160,141 140,152 120,141"/><polygon points="160,119 180,108 200,119 200,141 180,152 160,141"/><polygon points="200,119 220,108 240,119 240,141 220,152 200,141"/><polygon points="240,119 260,108 280,119 280,141 260,152 240,141"/><polygon points="280,119 300,108 320,119 320,141 300,152 280,141"/><polygon points="320,119 340,108 360,119 360,141 340,152 320,141"/><polygon points="360,119 380,108 400,119 400,141 380,152 360,141"/><polygon points="400,119 420,108 440,119 440,141 420,152 400,141"/><polygon points="440,119 460,108 480,119 480,141 460,152 440,141"/><polygon points="480,119 500,108 520,119 520,141 500,152 480,141"/><polygon points="520,119 540,108 560,119 560,141 540,152 520,141"/><polygon points="560,119 580,108 600,119 600,141 580,152 560,141"/><polygon points="600,119 620,108 640,119 640,141 620,152 600,141"/><polygon points="640,119 660,108 680,119 680,141 660,152 640,141"/><polygon points="680,119 700,108 720,119 720,141 700,152 680,141"/><polygon points="720,119 740,108 760,119 760,141 740,152 720,141"/><polygon points="760,119 780,108 800,119 800,141 780,152 760,141"/><polygon points="800,119 820,108 840,119 840,141 820,152 800,141"/><polygon points="840,119 860,108 880,119 880,141 860,152 840,141"/><polygon points="880,119 900,108 920,119 920,141 900,152 880,141"/><polygon points="920,119 940,108 960,119 960,141 940,152 920,141"/><polygon points="960,119 980,108 1000,119 1000,141 980,152 960,141"/><polygon points="1000,119 1020,108 1040,119 1040,141 1020,152 1000,141"/><polygon points="1040,119 1060,108 1080,119 1080,141 1060,152 1040,141"/><polygon points="1080,119 1100,108 1120,119 1120,141 1100,152 1080,141"/>
+  <polygon points="60,152 80,141 100,152 100,174 80,185 60,174"/><polygon points="100,152 120,141 140,152 140,174 120,185 100,174"/><polygon points="140,152 160,141 180,152 180,174 160,185 140,174"/><polygon points="180,152 200,141 220,152 220,174 200,185 180,174"/><polygon points="220,152 240,141 260,152 260,174 240,185 220,174"/><polygon points="260,152 280,141 300,152 300,174 280,185 260,174"/><polygon points="300,152 320,141 340,152 340,174 320,185 300,174"/><polygon points="340,152 360,141 380,152 380,174 360,185 340,174"/><polygon points="380,152 400,141 420,152 420,174 400,185 380,174"/><polygon points="420,152 440,141 460,152 460,174 440,185 420,174"/><polygon points="460,152 480,141 500,152 500,174 480,185 460,174"/><polygon points="500,152 520,141 540,152 540,174 520,185 500,174"/><polygon points="540,152 560,141 580,152 580,174 560,185 540,174"/><polygon points="580,152 600,141 620,152 620,174 600,185 580,174"/><polygon points="620,152 640,141 660,152 660,174 640,185 620,174"/><polygon points="660,152 680,141 700,152 700,174 680,185 660,174"/><polygon points="700,152 720,141 740,152 740,174 720,185 700,174"/><polygon points="740,152 760,141 780,152 780,174 760,185 740,174"/><polygon points="780,152 800,141 820,152 820,174 800,185 780,174"/><polygon points="820,152 840,141 860,152 860,174 840,185 820,174"/><polygon points="860,152 880,141 900,152 900,174 880,185 860,174"/><polygon points="900,152 920,141 940,152 940,174 920,185 900,174"/><polygon points="940,152 960,141 980,152 980,174 960,185 940,174"/><polygon points="980,152 1000,141 1020,152 1020,174 1000,185 980,174"/><polygon points="1020,152 1040,141 1060,152 1060,174 1040,185 1020,174"/><polygon points="1060,152 1080,141 1100,152 1100,174 1080,185 1060,174"/><polygon points="1100,152 1120,141 1140,152 1140,174 1120,185 1100,174"/>
+  <polygon points="40,185 60,174 80,185 80,207 60,218 40,207"/><polygon points="80,185 100,174 120,185 120,207 100,218 80,207"/><polygon points="120,185 140,174 160,185 160,207 140,218 120,207"/><polygon points="160,185 180,174 200,185 200,207 180,218 160,207"/><polygon points="200,185 220,174 240,185 240,207 220,218 200,207"/><polygon points="240,185 260,174 280,185 280,207 260,218 240,207"/><polygon points="280,185 300,174 320,185 320,207 300,218 280,207"/><polygon points="320,185 340,174 360,185 360,207 340,218 320,207"/><polygon points="360,185 380,174 400,185 400,207 380,218 360,207"/><polygon points="400,185 420,174 440,185 440,207 420,218 400,207"/><polygon points="440,185 460,174 480,185 480,207 460,218 440,207"/><polygon points="480,185 500,174 520,185 520,207 500,218 480,207"/><polygon points="520,185 540,174 560,185 560,207 540,218 520,207"/><polygon points="560,185 580,174 600,185 600,207 580,218 560,207"/><polygon points="600,185 620,174 640,185 640,207 620,218 600,207"/><polygon points="640,185 660,174 680,185 680,207 660,218 640,207"/><polygon points="680,185 700,174 720,185 720,207 700,218 680,207"/><polygon points="720,185 740,174 760,185 760,207 740,218 720,207"/><polygon points="760,185 780,174 800,185 800,207 780,218 760,207"/><polygon points="800,185 820,174 840,185 840,207 820,218 800,207"/><polygon points="840,185 860,174 880,185 880,207 860,218 840,207"/><polygon points="880,185 900,174 920,185 920,207 900,218 880,207"/><polygon points="920,185 940,174 960,185 960,207 940,218 920,207"/><polygon points="960,185 980,174 1000,185 1000,207 980,218 960,207"/><polygon points="1000,185 1020,174 1040,185 1040,207 1020,218 1000,207"/><polygon points="1040,185 1060,174 1080,185 1080,207 1060,218 1040,207"/><polygon points="1080,185 1100,174 1120,185 1120,207 1100,218 1080,207"/>
+  <polygon points="60,218 80,207 100,218 100,240 80,251 60,240"/><polygon points="100,218 120,207 140,218 140,240 120,251 100,240"/><polygon points="140,218 160,207 180,218 180,240 160,251 140,240"/><polygon points="180,218 200,207 220,218 220,240 200,251 180,240"/><polygon points="220,218 240,207 260,218 260,240 240,251 220,240"/><polygon points="260,218 280,207 300,218 300,240 280,251 260,240"/><polygon points="300,218 320,207 340,218 340,240 320,251 300,240"/><polygon points="340,218 360,207 380,218 380,240 360,251 340,240"/><polygon points="380,218 400,207 420,218 420,240 400,251 380,240"/><polygon points="420,218 440,207 460,218 460,240 440,251 420,240"/><polygon points="460,218 480,207 500,218 500,240 480,251 460,240"/><polygon points="500,218 520,207 540,218 540,240 520,251 500,240"/><polygon points="540,218 560,207 580,218 580,240 560,251 540,240"/><polygon points="580,218 600,207 620,218 620,240 600,251 580,240"/><polygon points="620,218 640,207 660,218 660,240 640,251 620,240"/><polygon points="660,218 680,207 700,218 700,240 680,251 660,240"/><polygon points="700,218 720,207 740,218 740,240 720,251 700,240"/><polygon points="740,218 760,207 780,218 780,240 760,251 740,240"/><polygon points="780,218 800,207 820,218 820,240 800,251 780,240"/><polygon points="820,218 840,207 860,218 860,240 840,251 820,240"/><polygon points="860,218 880,207 900,218 900,240 880,251 860,240"/><polygon points="900,218 920,207 940,218 940,240 920,251 900,240"/><polygon points="940,218 960,207 980,218 980,240 960,251 940,240"/><polygon points="980,218 1000,207 1020,218 1020,240 1000,251 980,240"/><polygon points="1020,218 1040,207 1060,218 1060,240 1040,251 1020,240"/><polygon points="1060,218 1080,207 1100,218 1100,240 1080,251 1060,240"/><polygon points="1100,218 1120,207 1140,218 1140,240 1120,251 1100,240"/>
+  <polygon points="40,251 60,240 80,251 80,273 60,284 40,273"/><polygon points="80,251 100,240 120,251 120,273 100,284 80,273"/><polygon points="120,251 140,240 160,251 160,273 140,284 120,273"/><polygon points="160,251 180,240 200,251 200,273 180,284 160,273"/><polygon points="200,251 220,240 240,251 240,273 220,284 200,273"/><polygon points="240,251 260,240 280,251 280,273 260,284 240,273"/><polygon points="280,251 300,240 320,251 320,273 300,284 280,273"/><polygon points="320,251 340,240 360,251 360,273 340,284 320,273"/><polygon points="360,251 380,240 400,251 400,273 380,284 360,273"/><polygon points="400,251 420,240 440,251 440,273 420,284 400,273"/><polygon points="440,251 460,240 480,251 480,273 460,284 440,273"/><polygon points="480,251 500,240 520,251 520,273 500,284 480,273"/><polygon points="520,251 540,240 560,251 560,273 540,284 520,273"/><polygon points="560,251 580,240 600,251 600,273 580,284 560,273"/><polygon points="600,251 620,240 640,251 640,273 620,284 600,273"/><polygon points="640,251 660,240 680,251 680,273 660,284 640,273"/><polygon points="680,251 700,240 720,251 720,273 700,284 680,273"/><polygon points="720,251 740,240 760,251 760,273 740,284 720,273"/><polygon points="760,251 780,240 800,251 800,273 780,284 760,273"/><polygon points="800,251 820,240 840,251 840,273 820,284 800,273"/><polygon points="840,251 860,240 880,251 880,273 860,284 840,273"/><polygon points="880,251 900,240 920,251 920,273 900,284 880,273"/><polygon points="920,251 940,240 960,251 960,273 940,284 920,273"/><polygon points="960,251 980,240 1000,251 1000,273 980,284 960,273"/><polygon points="1000,251 1020,240 1040,251 1040,273 1020,284 1000,273"/><polygon points="1040,251 1060,240 1080,251 1080,273 1060,284 1040,273"/><polygon points="1080,251 1100,240 1120,251 1120,273 1100,284 1080,273"/>
+  <polygon points="60,284 80,273 100,284 100,306 80,317 60,306"/><polygon points="100,284 120,273 140,284 140,306 120,317 100,306"/><polygon points="140,284 160,273 180,284 180,306 160,317 140,306"/><polygon points="180,284 200,273 220,284 220,306 200,317 180,306"/><polygon points="220,284 240,273 260,284 260,306 240,317 220,306"/><polygon points="260,284 280,273 300,284 300,306 280,317 260,306"/><polygon points="300,284 320,273 340,284 340,306 320,317 300,306"/><polygon points="340,284 360,273 380,284 380,306 360,317 340,306"/><polygon points="380,284 400,273 420,284 420,306 400,317 380,306"/><polygon points="420,284 440,273 460,284 460,306 440,317 420,306"/><polygon points="460,284 480,273 500,284 500,306 480,317 460,306"/><polygon points="500,284 520,273 540,284 540,306 520,317 500,306"/><polygon points="540,284 560,273 580,284 580,306 560,317 540,306"/><polygon points="580,284 600,273 620,284 620,306 600,317 580,306"/><polygon points="620,284 640,273 660,284 660,306 640,317 620,306"/><polygon points="660,284 680,273 700,284 700,306 680,317 660,306"/><polygon points="700,284 720,273 740,284 740,306 720,317 700,306"/><polygon points="740,284 760,273 780,284 780,306 760,317 740,306"/><polygon points="780,284 800,273 820,284 820,306 800,317 780,306"/><polygon points="820,284 840,273 860,284 860,306 840,317 820,306"/><polygon points="860,284 880,273 900,284 900,306 880,317 860,306"/><polygon points="900,284 920,273 940,284 940,306 920,317 900,306"/><polygon points="940,284 960,273 980,284 980,306 960,317 940,306"/><polygon points="980,284 1000,273 1020,284 1020,306 1000,317 980,306"/><polygon points="1020,284 1040,273 1060,284 1060,306 1040,317 1020,306"/><polygon points="1060,284 1080,273 1100,284 1100,306 1080,317 1060,306"/><polygon points="1100,284 1120,273 1140,284 1140,306 1120,317 1100,306"/>
+  <polygon points="40,317 60,306 80,317 80,339 60,350 40,339"/><polygon points="80,317 100,306 120,317 120,339 100,350 80,339"/><polygon points="120,317 140,306 160,317 160,339 140,350 120,339"/><polygon points="160,317 180,306 200,317 200,339 180,350 160,339"/><polygon points="200,317 220,306 240,317 240,339 220,350 200,339"/><polygon points="240,317 260,306 280,317 280,339 260,350 240,339"/><polygon points="280,317 300,306 320,317 320,339 300,350 280,339"/><polygon points="320,317 340,306 360,317 360,339 340,350 320,339"/><polygon points="360,317 380,306 400,317 400,339 380,350 360,339"/><polygon points="400,317 420,306 440,317 440,339 420,350 400,339"/><polygon points="440,317 460,306 480,317 480,339 460,350 440,339"/><polygon points="480,317 500,306 520,317 520,339 500,350 480,339"/><polygon points="520,317 540,306 560,317 560,339 540,350 520,339"/><polygon points="560,317 580,306 600,317 600,339 580,350 560,339"/><polygon points="600,317 620,306 640,317 640,339 620,350 600,339"/><polygon points="640,317 660,306 680,317 680,339 660,350 640,339"/><polygon points="680,317 700,306 720,317 720,339 700,350 680,339"/><polygon points="720,317 740,306 760,317 760,339 740,350 720,339"/><polygon points="760,317 780,306 800,317 800,339 780,350 760,339"/><polygon points="800,317 820,306 840,317 840,339 820,350 800,339"/><polygon points="840,317 860,306 880,317 880,339 860,350 840,339"/><polygon points="880,317 900,306 920,317 920,339 900,350 880,339"/><polygon points="920,317 940,306 960,317 960,339 940,350 920,339"/><polygon points="960,317 980,306 1000,317 1000,339 980,350 960,339"/><polygon points="1000,317 1020,306 1040,317 1040,339 1020,350 1000,339"/><polygon points="1040,317 1060,306 1080,317 1080,339 1060,350 1040,339"/><polygon points="1080,317 1100,306 1120,317 1120,339 1100,350 1080,339"/>
+  <polygon points="60,350 80,339 100,350 100,372 80,383 60,372"/><polygon points="100,350 120,339 140,350 140,372 120,383 100,372"/><polygon points="140,350 160,339 180,350 180,372 160,383 140,372"/><polygon points="180,350 200,339 220,350 220,372 200,383 180,372"/><polygon points="220,350 240,339 260,350 260,372 240,383 220,372"/><polygon points="260,350 280,339 300,350 300,372 280,383 260,372"/><polygon points="300,350 320,339 340,350 340,372 320,383 300,372"/><polygon points="340,350 360,339 380,350 380,372 360,383 340,372"/><polygon points="380,350 400,339 420,350 420,372 400,383 380,372"/><polygon points="420,350 440,339 460,350 460,372 440,383 420,372"/><polygon points="460,350 480,339 500,350 500,372 480,383 460,372"/><polygon points="500,350 520,339 540,350 540,372 520,383 500,372"/><polygon points="540,350 560,339 580,350 580,372 560,383 540,372"/><polygon points="580,350 600,339 620,350 620,372 600,383 580,372"/><polygon points="620,350 640,339 660,350 660,372 640,383 620,372"/><polygon points="660,350 680,339 700,350 700,372 680,383 660,372"/><polygon points="700,350 720,339 740,350 740,372 720,383 700,372"/><polygon points="740,350 760,339 780,350 780,372 760,383 740,372"/><polygon points="780,350 800,339 820,350 820,372 800,383 780,372"/><polygon points="820,350 840,339 860,350 860,372 840,383 820,372"/><polygon points="860,350 880,339 900,350 900,372 880,383 860,372"/><polygon points="900,350 920,339 940,350 940,372 920,383 900,372"/><polygon points="940,350 960,339 980,350 980,372 960,383 940,372"/><polygon points="980,350 1000,339 1020,350 1020,372 1000,383 980,372"/><polygon points="1020,350 1040,339 1060,350 1060,372 1040,383 1020,372"/><polygon points="1060,350 1080,339 1100,350 1100,372 1080,383 1060,372"/><polygon points="1100,350 1120,339 1140,350 1140,372 1120,383 1100,372"/>
+  <polygon points="40,383 60,372 80,383 80,405 60,416 40,405"/><polygon points="80,383 100,372 120,383 120,405 100,416 80,405"/><polygon points="120,383 140,372 160,383 160,405 140,416 120,405"/><polygon points="160,383 180,372 200,383 200,405 180,416 160,405"/><polygon points="200,383 220,372 240,383 240,405 220,416 200,405"/><polygon points="240,383 260,372 280,383 280,405 260,416 240,405"/><polygon points="280,383 300,372 320,383 320,405 300,416 280,405"/><polygon points="320,383 340,372 360,383 360,405 340,416 320,405"/><polygon points="360,383 380,372 400,383 400,405 380,416 360,405"/><polygon points="400,383 420,372 440,383 440,405 420,416 400,405"/><polygon points="440,383 460,372 480,383 480,405 460,416 440,405"/><polygon points="480,383 500,372 520,383 520,405 500,416 480,405"/><polygon points="520,383 540,372 560,383 560,405 540,416 520,405"/><polygon points="560,383 580,372 600,383 600,405 580,416 560,405"/><polygon points="600,383 620,372 640,383 640,405 620,416 600,405"/><polygon points="640,383 660,372 680,383 680,405 660,416 640,405"/><polygon points="680,383 700,372 720,383 720,405 700,416 680,405"/><polygon points="720,383 740,372 760,383 760,405 740,416 720,405"/><polygon points="760,383 780,372 800,383 800,405 780,416 760,405"/><polygon points="800,383 820,372 840,383 840,405 820,416 800,405"/><polygon points="840,383 860,372 880,383 880,405 860,416 840,405"/><polygon points="880,383 900,372 920,383 920,405 900,416 880,405"/><polygon points="920,383 940,372 960,383 960,405 940,416 920,405"/><polygon points="960,383 980,372 1000,383 1000,405 980,416 960,405"/><polygon points="1000,383 1020,372 1040,383 1040,405 1020,416 1000,405"/><polygon points="1040,383 1060,372 1080,383 1080,405 1060,416 1040,405"/><polygon points="1080,383 1100,372 1120,383 1120,405 1100,416 1080,405"/>
+</g>
+
+<!-- Grand cercle central ésotérique -->
+<g class="fil-circ">
+  <circle cx="600" cy="400" r="320"/>
+  <circle cx="600" cy="400" r="240"/>
+  <circle cx="600" cy="400" r="160"/>
+  <circle cx="600" cy="400" r="80"/>
+  <circle cx="600" cy="400" r="30"/>
+  <circle cx="200" cy="200" r="150"/>
+  <circle cx="200" cy="200" r="100"/>
+  <circle cx="200" cy="200" r="50"/>
+</g>
+
+<!-- Axes ésotériques grand cercle -->
+<g class="fil-axis">
+  <line x1="600" y1="80" x2="600" y2="720"/>
+  <line x1="280" y1="400" x2="920" y2="400"/>
+  <line x1="374" y1="174" x2="826" y2="626"/>
+  <line x1="826" y1="174" x2="374" y2="626"/>
+  <line x1="310" y1="287" x2="890" y2="513"/>
+  <line x1="310" y1="513" x2="890" y2="287"/>
+  <line x1="430" y1="120" x2="770" y2="680"/>
+  <line x1="770" y1="120" x2="430" y2="680"/>
+
+  <line x1="200" y1="50" x2="200" y2="350"/>
+  <line x1="50" y1="200" x2="350" y2="200"/>
+  <line x1="94" y1="94" x2="306" y2="306"/>
+  <line x1="306" y1="94" x2="94" y2="306"/>
+</g>
+
+<!-- Triangles mystiques -->
+<g class="fil-tri">
+  <polygon points="600,90 880,570 320,570"/>
+  <polygon points="600,710 880,230 320,230"/>
+  <polygon points="200,50 350,310 50,310"/>
+  <polygon points="200,350 350,90 50,90"/>
+</g>
+
+<!-- Circuits cyberpunk bords gauche -->
+<g class="fil-circuit">
+  <path d="M0,60 L80,60 L80,100 L160,100 L160,80 L220,80" fill="none"/>
+  <path d="M0,150 L50,150 L50,190 L110,190 L110,210 L180,210" fill="none"/>
+  <path d="M0,340 L60,340 L60,300 L130,300 L130,280 L190,280" fill="none"/>
+  <path d="M0,480 L70,480 L70,520 L150,520" fill="none"/>
+  <path d="M0,600 L90,600 L90,560 L160,560 L160,580 L240,580" fill="none"/>
+  <path d="M0,700 L55,700 L55,670 L120,670" fill="none"/>
+</g>
+<!-- Circuits cyberpunk bords droite -->
+<g class="fil-circuit">
+  <path d="M1200,80 L1120,80 L1120,120 L1040,120 L1040,100 L970,100" fill="none"/>
+  <path d="M1200,200 L1140,200 L1140,240 L1070,240 L1070,260 L1000,260" fill="none"/>
+  <path d="M1200,380 L1130,380 L1130,340 L1060,340 L1060,320 L990,320" fill="none"/>
+  <path d="M1200,500 L1120,500 L1120,540 L1050,540" fill="none"/>
+  <path d="M1200,620 L1110,620 L1110,580 L1040,580 L1040,600 L970,600" fill="none"/>
+  <path d="M1200,730 L1140,730 L1140,700 L1070,700" fill="none"/>
+</g>
+
+<!-- Noeuds cyan -->
+<g class="fil-node">
+  <circle cx="80" cy="60" r="3"/><circle cx="160" cy="100" r="3"/>
+  <circle cx="50" cy="150" r="3"/><circle cx="110" cy="190" r="3"/>
+  <circle cx="60" cy="340" r="3"/><circle cx="130" cy="300" r="3"/>
+  <circle cx="70" cy="480" r="3"/>
+  <circle cx="90" cy="600" r="3"/><circle cx="160" cy="560" r="3"/>
+  <circle cx="55" cy="700" r="3"/>
+  <circle cx="1120" cy="80" r="3"/><circle cx="1040" cy="120" r="3"/>
+  <circle cx="1140" cy="200" r="3"/><circle cx="1070" cy="240" r="3"/>
+  <circle cx="1130" cy="380" r="3"/><circle cx="1060" cy="340" r="3"/>
+  <circle cx="1120" cy="500" r="3"/>
+  <circle cx="1110" cy="620" r="3"/><circle cx="1040" cy="580" r="3"/>
+  <circle cx="1140" cy="730" r="3"/>
+</g>
+
+<!-- Sigils coins -->
+<g class="fil-rune">
+  <g transform="translate(80,80)">
+    <circle cx="0" cy="0" r="40"/>
+    <polygon points="0,-38 33,19 -33,19"/>
+    <polygon points="0,38 33,-19 -33,-19"/>
+    <line x1="-40" y1="0" x2="40" y2="0"/>
+    <line x1="0" y1="-40" x2="0" y2="40"/>
+  </g>
+  <g transform="translate(1120,80)">
+    <circle cx="0" cy="0" r="40"/>
+    <polygon points="0,-38 33,19 -33,19"/>
+    <polygon points="0,38 33,-19 -33,-19"/>
+    <line x1="-40" y1="0" x2="40" y2="0"/>
+    <line x1="0" y1="-40" x2="0" y2="40"/>
+  </g>
+  <g transform="translate(80,720)">
+    <circle cx="0" cy="0" r="40"/>
+    <polygon points="0,-38 33,19 -33,19"/>
+    <polygon points="0,38 33,-19 -33,-19"/>
+    <line x1="-40" y1="0" x2="40" y2="0"/>
+    <line x1="0" y1="-40" x2="0" y2="40"/>
+  </g>
+  <g transform="translate(1120,720)">
+    <circle cx="0" cy="0" r="40"/>
+    <polygon points="0,-38 33,19 -33,19"/>
+    <polygon points="0,38 33,-19 -33,-19"/>
+    <line x1="-40" y1="0" x2="40" y2="0"/>
+    <line x1="0" y1="-40" x2="0" y2="40"/>
+  </g>
+</g>
+
+<!-- Points clés -->
+<g class="fil-dot">
+  <circle cx="600" cy="80" r="2.5"/>
+  <circle cx="600" cy="720" r="2.5"/>
+  <circle cx="280" cy="400" r="2.5"/>
+  <circle cx="920" cy="400" r="2.5"/>
+  <circle cx="374" cy="174" r="2.5"/>
+  <circle cx="826" cy="174" r="2.5"/>
+  <circle cx="374" cy="626" r="2.5"/>
+  <circle cx="826" cy="626" r="2.5"/>
+  <circle cx="200" cy="50" r="2"/>
+  <circle cx="200" cy="350" r="2"/>
+  <circle cx="50" cy="200" r="2"/>
+  <circle cx="350" cy="200" r="2"/>
+</g>
+</svg>
+</div>
+<div id="layout" style="position:relative;z-index:1;">
   <div class="pioche-wrap" id="pioche-wrap"></div>
   <div id="cartes-zone"></div>
 </div>
-<div id="oracles-zone"></div>
+<div id="oracles-zone" style="position:relative;z-index:1;"></div>
 <script>
 
 // ── couleurs ──
@@ -218,84 +380,84 @@ function svgNum(sym, nom, val, inv) {
 
 // ── DONNÉES ──
 var D = [
-  {n:"N°0 Le Mat",s:"🎭",t:"M",o:"Les cartes montrent l'arrivée d'un inconnu loufoque. Acceptez son aide, il vous sera utile pour votre prochaine quête.",oi:"Prenez garde à cet inconnu excentrique. Sous ses airs étranges, il cherche à vous tromper (vol, cannibalisme...)."},
-  {n:"N°1 Le Bateleur",s:"🪄",t:"M",o:"Un marchand ambulant croisera votre route. Ses objets magiques sont rares et proposés à des prix raisonnables.",oi:"Un marchand vous proposera de prétendues \"merveilles\". Ne soyez pas dupes : ses objets sont défectueux ou maudits."},
-  {n:"N°2 La Papesse",s:"📿",t:"M",o:"Vous découvrirez l'entrée d'une ruine ou d'une grotte oubliée. L'endroit est inhabité, parfait pour se reposer et fouiller.",oi:"Vous trouverez des ruines antiques. N'y baissez pas votre garde : l'endroit grouille déjà de squatteurs hostiles."},
-  {n:"N°3 L'Impératrice",s:"👸🏼",t:"M",o:"Un émissaire viendra à vous avec une invitation prestigieuse ou un héritage, vous ouvrant l'accès à de nouvelles ressources.",oi:"Un messager vous remettra un ultimatum ou un ordre trompeur. C'est une manipulation pour vous pousser au conflit."},
-  {n:"N°4 L'Empereur",s:"🤴🏻",t:"M",o:"Des rumeurs d'un coup d'État viendront jusqu'à vous. Allez-vous aider, frapper un grand coup ou ignorer ? Le choix vous appartient.",oi:"Vous entendrez des rumeurs insistantes sur un coup d'État. Ne perdez pas votre temps, elles sont sans aucun fondement."},
-  {n:"N°5 Le Pape",s:"⛪",t:"M",o:"Vous ferez la rencontre de croyants sincères. Leur mouvement est bienveillant et leur communauté est prête à vous aider.",oi:"Vous croiserez des prêcheurs. Fuyez-les : c'est une secte malfaisante qui utilise la supercherie pour convertir."},
-  {n:"N°6 L'Amoureux",s:"❤️",t:"M",o:"Vous croiserez un être ou une créature en difficulté. Aidez-la, et elle deviendra un précieux ami ou familier.",oi:"Une personne ou une créature demandera votre amitié. Méfiez-vous d'elle, elle vous trahira à la première occasion."},
-  {n:"N°7 Le Chariot",s:"🛒",t:"M",o:"Le voyage s'accélère. Vous trouverez une monture, un véhicule ou un vaisseau en bon état de marche.",oi:"Vous tomberez sur un véhicule ou une bête de somme. Hélas, l'état général est tel que vous n'en tirerez que quelques pièces."},
-  {n:"N°8 La Justice",s:"⚖️",t:"M",o:"La loi est de sortie. Vous croiserez une milice ou des chasseurs de primes en pleine traque d'un individu.",oi:"La justice est à vos trousses. Une milice ou des chasseurs de primes sont activement à la recherche de votre groupe."},
-  {n:"N°9 L'Hermite",s:"🐚",t:"M",o:"Un autochtone vous proposera de lire l'avenir de l'un d'entre vous. Écoutez-le, sa prédiction s'avérera exacte.",oi:"Un devin local vous offrira ses services. C'est un charlatan qui vous manipulera pour vous extorquer."},
-  {n:"N°10 La Roue de la Fortune",s:"🛞",t:"M",o:"La chance vous sourit. Vous trouverez exactement ce qui vous manque, ou ferez une découverte inattendue.",oi:"La roue tourne mal. Vous avez perdu un objet de votre paquetage. Vous vous en rendrez compte quand il vous manquera cruellement."},
-  {n:"N°11 La Force",s:"💪🏻",t:"M",o:"Vous ferez face à une grande épreuve de FORCE, mais rassurez-vous : vous disposerez d'un avantage décisif pour la surmonter.",oi:"Une épreuve de FORCE se dresse devant vous. La lutte sera âpre, car vous devrez la surmonter avec un sérieux handicap."},
-  {n:"N°12 Le Pendu",s:"➰",t:"M",o:"Vous découvrirez des prisonniers dans l'incapacité de se défendre. Les signes sont clairs : ils sont innocents.",oi:"Vous croiserez des captifs réclamant de l'aide. Ne soyez pas crédules, ce sont de vils manants qui n'attendent qu'une ouverture pour attaquer."},
-  {n:"N°13 La Mort",s:"💀",t:"M",o:"Vous découvrirez des cadavres à piller. Ouvrez l'œil, car la piste menant à leurs coupables est encore fraîche.",oi:"Prudence dans cette région. Vous entrez dans une zone où il est possible de croiser un adversaire légendaire redoutable."},
-  {n:"N°14 La Tempérance",s:"🫗",t:"M",o:"Des indices viendront à vous. Ils vous aideront à résoudre vos problèmes ou vous mèneront vers la richesse.",oi:"Vous entendrez des indices trompeurs. Si vous les suivez, ils vous pousseront vers les mauvais choix ou votre perte."},
-  {n:"N°15 Le Diable",s:"😈",t:"M",o:"Le passé vous rattrape. Vos dernières actions ont fait du tort, et les victimes chercheront à se venger.",oi:"Vos actes récents ont été bénéfiques. Les communautés voisines vous en sont reconnaissantes, n'hésitez pas à les croiser."},
-  {n:"N°16 La Maison Dieu",s:"🗼",t:"M",o:"L'entrée d'un donjon ou d'un lieu inexploré s'offre à vous. Bonne nouvelle : la difficulté y sera étonnamment faible.",oi:"Une porte s'ouvre vers l'inconnu. Ce donjon ou sanctuaire inexploré sera d'une très grande difficulté."},
-  {n:"N°17 L'Étoile",s:"⭐",t:"M",o:"Les astres veillent sur vous. La prochaine nuit passée dans un vrai lit régénérera la totalité du groupe.",oi:"Levez les yeux lorsque la nuit tombera. Vous serez les témoins du passage d'une comète millénaire dans le ciel étoilé."},
-  {n:"N°18 La Lune",s:"🌒",t:"M",o:"La prochaine nuit s'annonce étrange. Des rêves ou des événements inattendus vous offriront des bonus et des révélations.",oi:"La nuit prochaine sera agitée. Le repos laissera place à un cauchemar commun qui tourmentera l'esprit de tout le groupe."},
-  {n:"N°19 Le Soleil",s:"☀️",t:"M",o:"La météo est superbe. Tant que vous serez en extérieur, votre PERCEPTION et/ou votre CHARISME seront améliorés.",oi:"Le ciel est dégagé, mais le soleil est de plomb. En extérieur, votre FORCE et/ou votre RÉSISTANCE seront pénalisées."},
-  {n:"N°20 Le Jugement",s:"👨🏻‍⚖️",t:"M",o:"On vous rappelle à un concours que vous aviez oublié. Un message vous invite à récupérer votre lot... et cette fois, c'est pour de vrai.",oi:"On vous annonce vainqueur d'un concours oublié. Un message vous prie de récupérer le lot, mais c'est un piège."},
+  {n:"N°0 Le Mat",s:"🎭",t:"M",o:"Rencontre d'un mystérieux et loufoque inconnu qui peut aider le groupe dans leur prochaine tâche.",oi:"Rencontre d'un mystérieux et loufoque inconnu qui compte tromper le groupe pour son intérêt (vol, cannibalisme, s'amuser...)."},
+  {n:"N°1 Le Bateleur",s:"🪄",t:"M",o:"Rencontre d'un marchand ambulant proposant des objets magiques plus ou moins rares et à des prix raisonnables.",oi:"Rencontre d'un marchand ambulant proposant des objets \"magiques\". Attention car aucun de ses objets ne fonctionne vraiment, voir provoque de graves malédictions."},
+  {n:"N°2 La Papesse",s:"📿",t:"M",o:"Découverte imprévue de l'entrée d'une grotte ou d'un temple ancien en ruine. Il semble inhabité. L'endroit parfait pour se reposer ou chercher quelques objets.",oi:"Découverte imprévue de l'entrée d'une grotte ou d'un temple ancien en ruine. Bien qu'en ruine, il semblerait que ça grouille de squatteurs là-dedans."},
+  {n:"N°3 L'Impératrice",s:"👸🏼",t:"M",o:"Un émissaire arrive avec un héritage ou une invitation prestigieuse. Son arrivée valide le statut du groupe et leur donne accès à une ressource protégée.",oi:"Un messager apporte un ultimatum ou un ordre de mission trompeur afin de manipuler les attentes du groupe et les pousser à entrer en conflit avec une puissance."},
+  {n:"N°4 L'Empereur",s:"🤴🏻",t:"M",o:"Vous entendez une rumeur à propos d'un coup d'État. Aider, passer son chemin ou frapper un grand coup ? Le choix appartient au groupe.",oi:"Vous entendez une rumeur à propos d'un coup d'État. À moins que ce ne soit simplement que des rumeurs sans aucun fondement."},
+  {n:"N°5 Le Pape",s:"⛪",t:"M",o:"Rencontre avec une ou des personnes prônant pour leur religion : un mouvement bienveillant avec sa communauté.",oi:"Rencontre avec une ou des personnes prônant pour leur religion : une secte malfaisante qui agit en arrière-plan et tente de convertir grâce à la supercherie."},
+  {n:"N°6 L'Amoureux",s:"❤️",t:"M",o:"Le groupe croise une personne ou une créature qui pourrait devenir leur ami ou animal de compagnie, s'ils l'aident dans sa tâche.",oi:"Le groupe croise une personne ou une créature qui pourrait devenir leur ami ou animal de compagnie, mais il les trahira sûrement à la moindre occasion."},
+  {n:"N°7 Le Chariot",s:"🛒",t:"M",o:"Trouvaille d'un véhicule, une monture ou un vaisseau en plus ou moins bon état de marche.",oi:"Trouvaille d'un véhicule ou monture. En vérifiant mieux l'état général, le groupe comprend qu'il n'est bon que pour récupérer quelques pièces. Et encore..."},
+  {n:"N°8 La Justice",s:"⚖️",t:"M",o:"Le groupe croise une milice ou chasseur(s) de prime à la recherche d'un individu.",oi:"Le groupe croise une milice ou chasseur(s) de prime à la recherche du groupe !"},
+  {n:"N°9 L'Hermite",s:"🐚",t:"M",o:"Rencontre avec un autochtone qui sait lire dans l'avenir et propose au groupe de le lire pour l'un d'eux. Peut-être que sa prédiction est vraie ?",oi:"Rencontre avec un autochtone qui sait lire dans l'avenir. Mais celui-là est un charlatan. Il vous manipulera pour vous extorquer ou vous conduire à votre perte."},
+  {n:"N°10 La Roue de la Fortune",s:"🛞",t:"M",o:"Le groupe est chanceux ! Ils tombent exactement sur ce qu'ils cherchaient. Et s'ils ne cherchaient rien en particulier, l'un d'eux trébuche sur un objet enseveli.",oi:"Le groupe a perdu un objet de leur paquetage. Ils s'en apercevront plus tard. Sûrement quand ils en auront besoin."},
+  {n:"N°11 La Force",s:"💪🏻",t:"M",o:"Vous allez être confronté à une épreuve de FORCE, et pour ce faire vous disposerez d'un avantage.",oi:"Vous allez être confronté à une épreuve de FORCE, et pour ce faire vous disposerez d'un handicap."},
+  {n:"N°12 Le Pendu",s:"➰",t:"M",o:"Le groupe tombe sur une ou des personnes prisonnières, ils sont innocents !",oi:"Le groupe tombe sur une ou des personnes prisonnières, ce sont en réalité de vils manants qui profiteront de votre crédulité pour vous attaquer !"},
+  {n:"N°13 La Mort",s:"💀",t:"M",o:"Découverte d'un ou plusieurs cadavres, avec les loots qui vont avec. Mais une piste mène sûrement aux coupables.",oi:"Vous arrivez dans une zone où il est possible de croiser un mob légendaire."},
+  {n:"N°14 La Tempérance",s:"🫗",t:"M",o:"Des indices arrivent à vos oreilles et vous aideront à résoudre vos problèmes de la meilleure des façons. Si vous n'avez pas de problèmes, ils peuvent vous mener à la richesse.",oi:"Des indices arrivent à vos oreilles mais risquent de vous pousser aux mauvais choix. Si vous n'avez pas de problèmes, ils peuvent vous mener à votre perte."},
+  {n:"N°15 Le Diable",s:"😈",t:"M",o:"Vos dernières actions ont en réalité porté préjudice à un grand nombre de personnes. Ceux-ci chercheront à se venger.",oi:"Vos dernières actions ont finalement été bénéfiques pour les communautés avoisinantes. Si vous croisez leurs routes ils seront reconnaissants."},
+  {n:"N°16 La Maison Dieu",s:"🗼",t:"M",o:"Découverte d'une entrée vers ce qui pourrait être un donjon, ou un lieu inexploré d'une difficulté peu élevée.",oi:"Découverte d'une entrée vers ce qui pourrait être un donjon, ou un lieu inexploré d'une grande difficulté."},
+  {n:"N°17 L'Étoile",s:"⭐",t:"M",o:"Une bonne étoile veille sur le groupe. La prochaine bonne nuit de repos dans un vrai lit régénérera totalement l'ensemble du groupe.",oi:"Vous levez la tête et voyez la comète millénaire zébrer le ciel nocturne."},
+  {n:"N°18 La Lune",s:"🌒",t:"M",o:"La prochaine nuit va être étrange. Interrompue par des rêves ou des événements étranges qui apporteront des bonus ou des révélations.",oi:"La prochaine nuit va être étrange. Le rêve se transforme en cauchemar commun. Le groupe sera tourmenté."},
+  {n:"N°19 Le Soleil",s:"☀️",t:"M",o:"Il fait une superbe météo. Votre PERCEPTION et/ou votre CHARISME seront améliorés tant que vous êtes en extérieur.",oi:"Il fait une superbe météo. Mais le soleil est de plomb ! Votre FORCE et/ou votre RÉSISTANCE seront pénalisés quand vous êtes en extérieur."},
+  {n:"N°20 Le Jugement",s:"👨🏻‍⚖️",t:"M",o:"On vous rappelle à un concours que vous aviez oublié. Un message vous invite à récupérer votre lot... et cette fois, c'est pour de vrai.",oi:"Vous avez participé à un concours. Mais vous ne vous en souvenez plus. Vous recevez un message vous priant de venir récupérer votre lot... Mais c'est un piège."},
   {n:"N°21 Le Monde",s:"🌍",t:"M",o:"L'atmosphère se calme. La météo va changer pour devenir peu à peu clémente et agréable pour voyager.",oi:"Les éléments se déchaînent. La météo va brutalement évoluer vers un chaos absolu. Trouvez un abri au plus vite."},
-  {n:"🌿As",v:"As",b:"🪵",t:"N",o:"La steppe aride. Il n'y a rien ici. Ni mob ni objet."},
-  {n:"🌿2",v:"2",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★."},
-  {n:"🌿3",v:"3",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★."},
-  {n:"🌿4",v:"4",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★."},
-  {n:"🌿5",v:"5",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★."},
-  {n:"🌿6",v:"6",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★★."},
-  {n:"🌿7",v:"7",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des Mob(s) ★★★★."},
-  {n:"🌿8",v:"8",b:"🪵",t:"N",o:"Vous approchez d'un lieu extérieur, jardin, clairière, cimetière…"},
-  {n:"🌿9",v:"9",b:"🪵",t:"N",o:"Vous approchez d'une petite bâtisse (en état ou ruine)."},
-  {n:"🌿10",v:"10",b:"🪵",t:"N",o:"Vous approchez d'une grande bâtisse (en état ou ruine)."},
-  {n:"🌿Valet",v:"Valet",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public (en état ou ruine)."},
-  {n:"🌿Cavalier",v:"Cavalier",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public (en état ou ruine)."},
-  {n:"🌿Dame",v:"Dame",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment religieux (en état ou ruine)."},
-  {n:"🌿Roi",v:"Roi",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment militaire (en état ou ruine)."},
-  {n:"🏆As",v:"As",b:"🍷",t:"N",o:"Découverte d'un message, information, rumeur, secret, détail intriguant..."},
-  {n:"🏆2",v:"2",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★ inadapté au biome."},
-  {n:"🏆3",v:"3",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★ inadapté au biome."},
-  {n:"🏆4",v:"4",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ avec un détail intriguant."},
-  {n:"🏆5",v:"5",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ avec un détail intriguant."},
-  {n:"🏆6",v:"6",b:"🍷",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★, mais il n'est pas comme d'habitude."},
-  {n:"🏆7",v:"7",b:"🍷",t:"N",o:"Vous rencontrez un mob ★★★★ mort... Mais qui a tué une telle créature ?"},
-  {n:"🏆8",v:"8",b:"🍷",t:"N",o:"Il n'y a plus de saison ! Le climat change brutalement et anormalement..."},
-  {n:"🏆9",v:"9",b:"🍷",t:"N",o:"Découverte de l'entrée d'une grotte. Mais où mène-t-elle ?"},
-  {n:"🏆10",v:"10",b:"🍷",t:"N",o:"Vous voyez un prospectus ou pancarte publicitaire annonçant un événement."},
-  {n:"🏆Valet",v:"Valet",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs zikos qui chantent les nouvelles de la contrée."},
-  {n:"🏆Cavalier",v:"Cavalier",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs zikos qui chantent les nouvelles de la contrée."},
-  {n:"🏆Dame",v:"Dame",b:"🍷",t:"F",o:"Vous rencontrez un ou des PNJ(s) issu(s) d'une guilde / secte."},
-  {n:"🏆Roi",v:"Roi",b:"🍷",t:"F",o:"Vous serez confronté de près ou de loin à un complot politique..."},
-  {n:"⚔️As",v:"As",b:"⚔️",t:"N",o:"Le calme plat."},
-  {n:"⚔️2",v:"2",b:"⚔️",t:"N",o:"Vous rencontrez un ou des mob(s) ★."},
-  {n:"⚔️3",v:"3",b:"⚔️",t:"N",o:"Vous rencontrez un ou des mob(s) ★."},
-  {n:"⚔️4",v:"4",b:"⚔️",t:"N",o:"Vous vous faites attaquer par un ou des mob(s) ★★."},
-  {n:"⚔️5",v:"5",b:"⚔️",t:"N",o:"Vous vous faites attaquer par un ou des mob(s) ★★."},
-  {n:"⚔️6",v:"6",b:"⚔️",t:"N",o:"Vous tombez dans une embuscade tendue par un ou des mob(s) ★★★."},
-  {n:"⚔️7",v:"7",b:"⚔️",t:"N",o:"Vous croisez la route d'un mob ★★★★ en pleine chasse ou en train de faire la sieste."},
-  {n:"⚔️8",v:"8",b:"⚔️",t:"N",o:"La flore locale est impressionnante mais ralentit votre progression."},
-  {n:"⚔️9",v:"9",b:"⚔️",t:"N",o:"La faune vous mène la vie dure (mobs ★ type insecte et nuisibles)."},
-  {n:"⚔️10",v:"10",b:"⚔️",t:"N",o:"La soif, la faim ou le manque de sommeil vous tiraillent de plus en plus."},
-  {n:"⚔️Valet",v:"Valet",b:"⚔️",t:"F",o:"Guet-apens de bandits de grand chemin ! De mauvais gars pas commodes vous attaquent !"},
-  {n:"⚔️Cavalier",v:"Cavalier",b:"⚔️",t:"F",o:"Guet-apens de bandits de grand chemin ! De mauvais gars pas commodes vous attaquent !"},
-  {n:"⚔️Dame",v:"Dame",b:"⚔️",t:"F",o:"Alerte ! Damoiselle/damoiseau en détresse ! (Mais c'est peut-être un piège.)"},
-  {n:"⚔️Roi",v:"Roi",b:"⚔️",t:"F",o:"Vous rencontrez un voyageur solitaire... Qu'il ne vaut mieux pas taquiner."},
-  {n:"💰As",v:"As",b:"🪙",t:"N",o:"Vous trouvez un objet plus ou moins précieux posé là, sans surveillance."},
-  {n:"💰2",v:"2",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★ en possession d'objets ou trésors."},
-  {n:"💰3",v:"3",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★ en possession d'objets ou trésors."},
-  {n:"💰4",v:"4",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ en possession d'objets ou trésors."},
-  {n:"💰5",v:"5",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★ en possession d'objets ou trésors."},
-  {n:"💰6",v:"6",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★ en possession d'objets ou trésors."},
-  {n:"💰7",v:"7",b:"🪙",t:"N",o:"Vous rencontrez un ou des mob(s) ★★★★ en possession d'objets ou trésors."},
-  {n:"💰8",v:"8",b:"🪙",t:"N",o:"Vous croisez la route d'un marchand ambulant."},
-  {n:"💰9",v:"9",b:"🪙",t:"N",o:"Vous croisez une petite auberge, pension, motel (abandonné ou en état)."},
-  {n:"💰10",v:"10",b:"🪙",t:"N",o:"Vous croisez une grande auberge, pension, motel (abandonné ou en état)."},
-  {n:"💰Valet",v:"Valet",b:"🪙",t:"F",o:"Vous croisez un petit convoi gardé."},
-  {n:"💰Cavalier",v:"Cavalier",b:"🪙",t:"F",o:"Vous croisez un grand convoi gardé."},
-  {n:"💰Dame",v:"Dame",b:"🪙",t:"F",o:"Vous rencontrez un ou des PNJ(s) richement habillé(s) et équipé(s)."},
-  {n:"💰Roi",v:"Roi",b:"🪙",t:"F",o:"Vous rencontrez un bourgeois et son ou ses garde(s) du corps."}
+  {n:"🌿As",v:"As",b:"🪵",t:"N",o:"Une plaine luxuriante, pas de créature ni d'objet mais vous vous y sentez bien.",oi:"La steppe aride. Il n'y a rien ici. Ni créature ni objet et en plus y rester vous met mal à l'aise."},
+  {n:"🌿2",v:"2",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures faibles.",oi:"Vous approchez d'un lieu habité par une communauté rurale et plutôt pauvre."},
+  {n:"🌿3",v:"3",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures faibles.",oi:"Vous approchez d'un lieu habité par une communauté rurale et plutôt pauvre."},
+  {n:"🌿4",v:"4",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne.",oi:"Vous approchez d'un lieu habité par une communauté urbaine et prolétaire."},
+  {n:"🌿5",v:"5",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne.",oi:"Vous approchez d'un lieu habité par une communauté urbaine et prolétaire."},
+  {n:"🌿6",v:"6",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures costaudes.",oi:"Vous approchez d'un lieu habité par une communauté urbaine et bourgeoise."},
+  {n:"🌿7",v:"7",b:"🪵",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures puissantes.",oi:"Vous approchez d'un lieu habité par une communauté bourgeoise de noble lignée."},
+  {n:"🌿8",v:"8",b:"🪵",t:"N",o:"Vous approchez d'un lieu extérieur, jardin, clairière, cimetière dans un parfait état d'entretien.",oi:"Vous approchez d'un lieu extérieur, jardin, clairière, cimetière en décrépitude, voire un poil lugubre."},
+  {n:"🌿9",v:"9",b:"🪵",t:"N",o:"Vous approchez d'une petite bâtisse habitée.",oi:"Vous approchez d'une petite bâtisse à l'abandon."},
+  {n:"🌿10",v:"10",b:"🪵",t:"N",o:"Vous approchez d'une grande bâtisse habitée.",oi:"Vous approchez d'une grande bâtisse à l'abandon."},
+  {n:"🌿Valet",v:"Valet",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public fréquenté.",oi:"Vous approchez d'un bâtiment public à l'abandon."},
+  {n:"🌿Cavalier",v:"Cavalier",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment public fréquenté.",oi:"Vous approchez d'un bâtiment public à l'abandon."},
+  {n:"🌿Dame",v:"Dame",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment religieux fréquenté.",oi:"Vous approchez d'un bâtiment religieux à l'abandon."},
+  {n:"🌿Roi",v:"Roi",b:"🪵",t:"F",o:"Vous approchez d'un bâtiment militaire exploité.",oi:"Vous approchez d'un bâtiment militaire à l'abandon."},
+  {n:"🏆As",v:"As",b:"🍷",t:"N",o:"Découverte d'un message, information, rumeur, secret, détail intriguant... à connotation positive.",oi:"Découverte d'un message, information, rumeur, secret, détail intriguant... terrible et déroutant."},
+  {n:"🏆2",v:"2",b:"🍷",t:"N",o:"Vous rencontrez une créature faible loin de son lieu de vie habituel.",oi:"Vous rencontrez une créature passive loin de son lieu de vie habituel."},
+  {n:"🏆3",v:"3",b:"🍷",t:"N",o:"Vous rencontrez une créature faible loin de son lieu de vie habituel.",oi:"Vous rencontrez une créature passive loin de son lieu de vie habituel."},
+  {n:"🏆4",v:"4",b:"🍷",t:"N",o:"Vous rencontrez une créature de force moyenne qui arbore un détail intrigant.",oi:"Vous rencontrez une créature de force moyenne qui dévore une personne encore vivante."},
+  {n:"🏆5",v:"5",b:"🍷",t:"N",o:"Vous rencontrez une créature de force moyenne qui arbore un détail intrigant.",oi:"Vous rencontrez une créature de force moyenne qui dévore une personne encore vivante."},
+  {n:"🏆6",v:"6",b:"🍷",t:"N",o:"Vous rencontrez une créature costaude étrangement calme malgré votre approche.",oi:"Vous rencontrez une créature costaude bien plus agressive qu'à l'habitude, elle vous remarque et dispose de l'initiative."},
+  {n:"🏆7",v:"7",b:"🍷",t:"N",o:"Vous découvrez le cadavre d'une créature puissante fraîchement occise. Une piste part d'ici.",oi:"Vous découvrez le cadavre d'une créature puissante fraîchement occise, son prédateur rôde et vous observe. Il est légendaire."},
+  {n:"🏆8",v:"8",b:"🍷",t:"N",o:"Il se met soudainement à faire beau.",oi:"Il se met soudainement à pleuvoir."},
+  {n:"🏆9",v:"9",b:"🍷",t:"N",o:"Découverte de l'entrée d'une grotte.",oi:"Découverte de l'entrée d'une grotte. C'est en réalité une tanière."},
+  {n:"🏆10",v:"10",b:"🍷",t:"N",o:"Vous voyez un prospectus ou pancarte publicitaire annonçant un événement.",oi:"Vous voyez un avis de recherche avec... Votre visage dessus ?!"},
+  {n:"🏆Valet",v:"Valet",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs bardes qui chantent les nouvelles de la contrée, et elles sont plutôt bonnes.",oi:"Rencontre d'un ou plusieurs bardes qui chantent les nouvelles de la contrée, et c'est pas la joie."},
+  {n:"🏆Cavalier",v:"Cavalier",b:"🍷",t:"F",o:"Rencontre d'un ou plusieurs bardes qui chantent les nouvelles de la contrée, et elles sont plutôt bonnes.",oi:"Rencontre d'un ou plusieurs bardes qui chantent les nouvelles de la contrée, et c'est pas la joie."},
+  {n:"🏆Dame",v:"Dame",b:"🍷",t:"F",o:"Vous rencontrez un ou des personnages issu(s) d'une guilde / secte. Ils tentent de recruter des gens dans la rue.",oi:"Vous rencontrez un ou des personnages issu(s) d'une guilde / secte. Ils veulent vous convertir par la force."},
+  {n:"🏆Roi",v:"Roi",b:"🍷",t:"F",o:"Vous entendez parler d'un complot.",oi:"Vous êtes au cœur d'un complot."},
+  {n:"⚔️As",v:"As",b:"⚔️",t:"N",o:"Le calme plat.",oi:"Le calme plat."},
+  {n:"⚔️2",v:"2",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures faibles, elles n'ont pas l'air en forme.",oi:"Vous approchez d'un lieu habité par un ou des créatures faibles, elles ont l'air survolté."},
+  {n:"⚔️3",v:"3",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures faibles, elles n'ont pas l'air en forme.",oi:"Vous approchez d'un lieu habité par un ou des créatures faibles, elles ont l'air survolté."},
+  {n:"⚔️4",v:"4",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne, elles n'ont pas l'air en forme.",oi:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne, elles ont l'air survolté."},
+  {n:"⚔️5",v:"5",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne, elles n'ont pas l'air en forme.",oi:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne, elles ont l'air survolté."},
+  {n:"⚔️6",v:"6",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures costaudes, elles n'ont pas l'air en forme.",oi:"Vous approchez d'un lieu habité par un ou des créatures costaudes, elles ont l'air survolté."},
+  {n:"⚔️7",v:"7",b:"⚔️",t:"N",o:"Vous approchez d'un lieu habité par un ou des créatures costaudes, mais elles font la sieste.",oi:"Vous approchez d'un lieu habité par un ou des créatures costaudes, elles sont en chasse."},
+  {n:"⚔️8",v:"8",b:"⚔️",t:"N",o:"La flore locale est impressionnante mais ralentit votre progression.",oi:"La flore locale est impressionnante et risque de vous empoisonner."},
+  {n:"⚔️9",v:"9",b:"⚔️",t:"N",o:"La flore locale est impressionnante mais ralentit votre progression.",oi:"La flore locale est impressionnante et risque de vous empoisonner."},
+  {n:"⚔️10",v:"10",b:"⚔️",t:"N",o:"Vous vous sentez en pleine forme.",oi:"La soif, la faim ou le manque de sommeil vous tiraillent de plus en plus."},
+  {n:"⚔️Valet",v:"Valet",b:"⚔️",t:"F",o:"Vous passez devant un relais routier où on offre le café.",oi:"Guet-apens de bandits de grand chemin, brigands, gangs... Bref de mauvais gars pas commodes vous attaquent !"},
+  {n:"⚔️Cavalier",v:"Cavalier",b:"⚔️",t:"F",o:"Vous passez devant un relais routier où on offre le café.",oi:"Guet-apens de bandits de grand chemin, brigands, gangs... Bref de mauvais gars pas commodes vous attaquent !"},
+  {n:"⚔️Dame",v:"Dame",b:"⚔️",t:"F",o:"Alerte ! Damoiselle/damoiseau en détresse ! Elle est riche et vous récompensera.",oi:"Alerte ! Damoiselle/damoiseau en détresse ! Mais c'est un piège."},
+  {n:"⚔️Roi",v:"Roi",b:"⚔️",t:"F",o:"Vous rencontrez un voyageur solitaire et suréquipé... Qu'il ne vaut mieux pas taquiner.",oi:"Vous rencontrez un voyageur solitaire et suréquipé... Qui vous provoque."},
+  {n:"💰As",v:"As",b:"🪙",t:"N",o:"Vous trouvez un objet peu précieux posé là, sans surveillance.",oi:"Vous trouvez un objet très précieux posé là, sans surveillance."},
+  {n:"💰2",v:"2",b:"🪙",t:"N",o:"Vous rencontrez une ou des créatures faibles en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures faibles."},
+  {n:"💰3",v:"3",b:"🪙",t:"N",o:"Vous rencontrez une ou des créatures faibles en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures faibles."},
+  {n:"💰4",v:"4",b:"🪙",t:"N",o:"Vous rencontrez une ou des créatures de force moyenne en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne."},
+  {n:"💰5",v:"5",b:"🪙",t:"N",o:"Vous rencontrez une ou des créatures de force moyenne en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures de force moyenne."},
+  {n:"💰6",v:"6",b:"🪙",t:"N",o:"Vous rencontrez un ou des créatures costaudes en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures costaudes."},
+  {n:"💰7",v:"7",b:"🪙",t:"N",o:"Vous rencontrez un ou des créatures costaudes en possession d'objets ou trésors.",oi:"Vous approchez d'un lieu habité par un ou des créatures costaudes."},
+  {n:"💰8",v:"8",b:"🪙",t:"N",o:"Vous croisez la route d'un marchand ambulant.",oi:"Vous croisez la route d'un marchand ambulant, mais il a déjà tout vendu et se promène avec une forte somme d'argent."},
+  {n:"💰9",v:"9",b:"🪙",t:"N",o:"Vous croisez une petite auberge, pension, motel fréquenté.",oi:"Vous croisez une petite auberge, pension, motel à l'abandon."},
+  {n:"💰10",v:"10",b:"🪙",t:"N",o:"Vous croisez une grande auberge, pension, motel fréquenté.",oi:"Vous croisez une grande auberge, pension, motel à l'abandon."},
+  {n:"💰Valet",v:"Valet",b:"🪙",t:"F",o:"Vous croisez un petit convoi gardé. Ils ont l'air amicaux.",oi:"Vous croisez un petit convoi gardé. Ils ont l'air agressifs."},
+  {n:"💰Cavalier",v:"Cavalier",b:"🪙",t:"F",o:"Vous croisez un grand convoi gardé. Ils ont l'air amicaux.",oi:"Vous croisez un grand convoi gardé. Ils ont l'air agressifs."},
+  {n:"💰Dame",v:"Dame",b:"🪙",t:"F",o:"Vous rencontrez un ou des personnages richement habillé(s) et équipé(s).",oi:"Vous rencontrez un ou des personnages pauvres, maigres et faibles."},
+  {n:"💰Roi",v:"Roi",b:"🪙",t:"F",o:"Vous rencontrez un bourgeois et son ou ses garde(s) du corps.",oi:"Vous rencontrez un brigand et son ou ses acolytes."}
 ]
 
 // ── ÉTAT ──
