@@ -5,6 +5,7 @@
 <title>Tarot</title>
 <style>
 * { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
 body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; color: white; position: relative; }
 
 #filigrane {
@@ -16,27 +17,37 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
   overflow: hidden;
 }
 
-/* Layout principal : pioche fixe à gauche + colonnes cartes */
+/* Layout principal responsive */
 #layout {
   display: flex;
   align-items: flex-start;
   gap: 16px;
   position: relative;
   z-index: 1;
+  width: 100%;
+}
+
+/* Colonne gauche : pioche + bouton save + jalons */
+#colonne-gauche {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: var(--colg, 140px);
 }
 
 /* Pioche fixe */
 .pioche-wrap {
   position: relative;
-  width: 110px;
+  width: var(--cw);
   flex-shrink: 0;
-  margin-right: 8px;
 }
 .pioche-wrap::before,
 .pioche-wrap::after {
   content: '';
   position: absolute;
-  width: 110px; height: 100%;
+  width: var(--cw); height: 100%;
   top: 0; left: 0;
   border-radius: 10px;
   background: #1a0a2e;
@@ -47,46 +58,79 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
 .pioche-btn {
   position: relative; z-index: 1;
   margin: 0; padding: 0; border: none; background: none;
-  cursor: pointer; width: 110px; display: block;
+  cursor: pointer; width: var(--cw); display: block;
   transition: transform 0.1s;
 }
 .pioche-btn:hover { transform: scale(1.03); }
-.pioche-btn svg { display: block; width: 110px; height: auto; }
+.pioche-btn svg { display: block; width: 100%; height: auto; }
 .pioche-btn.vide { filter: grayscale(1) brightness(0.35); cursor: pointer; }
 
-/* Zone cartes tirées : ligne horizontale scrollable */
+/* Bouton sauvegarder */
+#btn-save {
+  width: var(--cw);
+  background: #1a0a2e;
+  border: 1px solid #7c5cbf;
+  color: #9b7de0;
+  font-family: sans-serif;
+  font-size: 11px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s;
+  text-align: center;
+}
+#btn-save:hover { background: #7c5cbf; color: white; }
+#btn-save:disabled { opacity: 0.3; cursor: default; }
+
+/* Jalons */
+#jalons { width: var(--cw); }
+.jalon {
+  background: #1a0a2e99;
+  border: 1px solid #4a2d7a;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  line-height: 1.4;
+}
+.jalon:hover { border-color: #7c5cbf; }
+.jalon-num { color: #7c5cbf; font-size: 9px; margin-bottom: 2px; letter-spacing: 1px; }
+.jalon-cartes { color: #ccc; word-break: break-word; }
+
+/* Colonne droite : cartes + oracles */
+#colonne-droite {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Zone cartes tirées */
 #cartes-zone {
   display: flex;
   flex-wrap: nowrap;
   gap: 0;
   align-items: flex-start;
-  overflow-x: auto;
-  flex: 1;
-}
-
-/* Colonne carte + oracle */
-.col-carte {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
+  overflow: visible;
 }
 
 .carte-slot {
-  width: 110px;
+  width: var(--cw);
   cursor: grab;
   user-select: none;
+  flex-shrink: 0;
 }
 .carte-slot.dragging { opacity: 0.3; }
-.carte-face { width: 110px; border-radius: 10px; overflow: hidden; display: block; }
+.carte-face { width: var(--cw); border-radius: 10px; overflow: hidden; display: block; }
 .carte-face svg { display: block; width: 100%; height: auto; }
 .carte-face.endroit { box-shadow: 0 0 16px #3a6abf99; }
 .carte-face.envers  { box-shadow: 0 0 16px #bf3a3a99; }
 
 #oracles-zone {
   margin-top: 16px;
-  max-width: calc(5 * 110px + 6 * 14px);
-  margin-left: 134px;
 }
 
 .oracle-inline {
@@ -108,7 +152,7 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
 
 /* Drop zone entre colonnes */
 .drop-zone {
-  width: 14px;
+  width: var(--dzw, 8px);
   flex-shrink: 0;
   align-self: stretch;
   min-height: 170px;
@@ -292,10 +336,16 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
 </svg>
 </div>
 <div id="layout" style="position:relative;z-index:1;">
-  <div class="pioche-wrap" id="pioche-wrap"></div>
-  <div id="cartes-zone"></div>
+  <div id="colonne-gauche">
+    <div class="pioche-wrap" id="pioche-wrap"></div>
+    <button id="btn-save" onclick="sauvegarder()" disabled>💾 Sauvegarder</button>
+    <div id="jalons"></div>
+  </div>
+  <div id="colonne-droite">
+    <div id="cartes-zone"></div>
+    <div id="oracles-zone"></div>
+  </div>
 </div>
-<div id="oracles-zone" style="position:relative;z-index:1;"></div>
 <script>
 
 // ── couleurs ──
@@ -475,15 +525,65 @@ function init() {
   rendu()
 }
 
+// ── TAILLE RESPONSIVE ──
+var CW = 110
+var COL_G = 140 // largeur fixe colonne gauche (pioche 110 + marge)
+function calcCW() {
+  var pad = 48  // padding body gauche + droite
+  var gap = 16  // gap entre colonne gauche et droite
+  var nCartes = 5
+  var nDZ = nCartes + 1  // drop-zones
+  var dzW = 8   // drop-zone réduite pour gagner de la place
+  var avail = window.innerWidth - pad - COL_G - gap - (nDZ * dzW)
+  CW = Math.max(80, Math.floor(avail / nCartes))
+  document.documentElement.style.setProperty('--cw', CW + 'px')
+  document.documentElement.style.setProperty('--dzw', dzW + 'px')
+  document.documentElement.style.setProperty('--colg', COL_G + 'px')
+}
+window.addEventListener('resize', function(){ calcCW(); rendu() })
+calcCW()
+
+// ── JALONS ──
+var jalons = []
+function sauvegarder() {
+  if (tirage.length === 0) return
+  var num = jalons.length + 1
+  var snapshot = tirage.map(function(t) {
+    return { c: t.c, inv: t.inv }
+  })
+  jalons.push({ num: num, cartes: snapshot })
+  renduJalons()
+}
+function renduJalons() {
+  var el = document.getElementById('jalons')
+  el.innerHTML = ''
+  for (var i = 0; i < jalons.length; i++) {
+    var j = jalons[i];
+    (function(jj) {
+      var div = document.createElement('div')
+      div.className = 'jalon'
+      div.title = 'Cliquer pour recharger ce tirage'
+      var noms = jj.cartes.map(function(t) { return nomCarte(t.c) + (t.inv ? ' ↕' : ' ↑') }).join(' · ')
+      div.innerHTML = '<div class="jalon-num">✦ Tirage ' + jj.num + '</div><div class="jalon-cartes">' + noms + '</div>'
+      div.onclick = function() { chargerJalon(jj) }
+      el.appendChild(div)
+    })(j)
+  }
+}
+function chargerJalon(j) {
+  tirage = j.cartes.map(function(t) { return { c: t.c, inv: t.inv, rev: true, nouveau: false } })
+  pioche = []
+  rendu()
+}
+
 // ── RENDU PIOCHE ──
 function renduPioche() {
   var wrap = document.getElementById('pioche-wrap')
   wrap.innerHTML = ''
-  // couches d'épaisseur via divs
   var b1 = document.createElement('div')
-  b1.style.cssText = 'position:absolute;width:110px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(6px,6px);z-index:0'
+  b1.style.cssText = 'position:absolute;width:'+CW+'px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(6px,6px);z-index:0'
   var b2 = document.createElement('div')
-  b2.style.cssText = 'position:absolute;width:110px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(3px,3px);z-index:0'
+  b2.style.cssText = 'position:absolute;width:'+CW+'px;height:100%;top:0;left:0;border-radius:10px;background:#1a0a2e;border:1px solid #4a2d7a;transform:translate(3px,3px);z-index:0'
   var btn = document.createElement('button')
   var vide = pioche.length === 0
   btn.className = 'pioche-btn' + (vide ? ' vide' : '')
@@ -497,6 +597,9 @@ function renduPioche() {
     wrap.appendChild(b2)
   }
   wrap.appendChild(btn)
+  // activer/désactiver bouton save
+  var bs = document.getElementById('btn-save')
+  if (bs) bs.disabled = tirage.length === 0
 }
 
 // ── RENDU CARTES ──
