@@ -92,13 +92,34 @@ body { background: #0d0520; padding: 1.5em; margin: 0; font-family: sans-serif; 
   padding: 6px 8px;
   margin-bottom: 6px;
   font-size: 10px;
-  cursor: pointer;
   transition: border-color 0.2s;
   line-height: 1.4;
 }
-.jalon:hover { border-color: #7c5cbf; }
-.jalon-num { color: #7c5cbf; font-size: 9px; margin-bottom: 2px; letter-spacing: 1px; }
-.jalon-cartes { color: #ccc; word-break: break-word; }
+.jalon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.jalon-num {
+  color: #7c5cbf;
+  font-size: 9px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  flex: 1;
+}
+.jalon-num:hover { color: #9b7de0; }
+.jalon-del {
+  background: none;
+  border: none;
+  color: #4a2d7a;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.jalon-del:hover { color: #bf3a3a; }
 
 /* Colonne droite : cartes + oracles */
 #colonne-droite {
@@ -376,15 +397,44 @@ function dos(n, vide) {
 function svgMaj(sym, nom, num, inv) {
   var c = C(inv)
   return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
-    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
-    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
-    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
-    +'<circle cx="100" cy="145" r="55" fill="none" stroke="'+c.au+'" stroke-width=".5" opacity=".4"/>'
-    +'<circle cx="100" cy="145" r="40" fill="none" stroke="'+c.au+'" stroke-width=".5" opacity=".25"/>'
-    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="64" font-family="serif">'+sym+'</text>'
-    +'<line x1="30" y1="232" x2="170" y2="232" stroke="'+c.c2+'" stroke-width=".5"/>'
-    +'<text x="100" y="250" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif" letter-spacing="1.5">'+nom.toUpperCase()+'</text>'
-    +'<text x="100" y="264" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif">'+num+'</text>'
+    // fond
+    +'<rect width="200" height="320" rx="12" fill="'+c.bg+'"/>'
+    // cadres
+    +'<rect x="6" y="6" width="188" height="308" rx="10" fill="none" stroke="'+c.ca+'" stroke-width="1.5"/>'
+    +'<rect x="12" y="12" width="176" height="296" rx="8" fill="none" stroke="'+c.c2+'" stroke-width="0.6"/>'
+    +'<rect x="16" y="16" width="168" height="288" rx="6" fill="none" stroke="'+c.ca+'" stroke-width="0.3" opacity="0.4"/>'
+    // cercles aura
+    +'<circle cx="100" cy="138" r="68" fill="none" stroke="'+c.au+'" stroke-width="0.6" opacity="0.35"/>'
+    +'<circle cx="100" cy="138" r="52" fill="none" stroke="'+c.au+'" stroke-width="0.5" opacity="0.25"/>'
+    +'<circle cx="100" cy="138" r="36" fill="none" stroke="'+c.au+'" stroke-width="0.4" opacity="0.15"/>'
+    // étoile 8 branches en fond
+    +'<g opacity="0.12" stroke="'+c.au+'" stroke-width="0.5" fill="none">'
+    +'<line x1="100" y1="70" x2="100" y2="206"/>'
+    +'<line x1="32" y1="138" x2="168" y2="138"/>'
+    +'<line x1="52" y1="90" x2="148" y2="186"/>'
+    +'<line x1="148" y1="90" x2="52" y2="186"/>'
+    +'</g>'
+    // emoji
+    +'<text x="100" y="148" text-anchor="middle" dominant-baseline="central" font-size="82" font-family="serif">'+sym+'</text>'
+    // ornements coins
+    +'<circle cx="24" cy="24" r="5" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<circle cx="176" cy="24" r="5" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<circle cx="24" cy="296" r="5" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    +'<circle cx="176" cy="296" r="5" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
+    // losanges coins
+    +'<polygon points="24,18 30,24 24,30 18,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,18 182,24 176,30 170,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="24,290 30,296 24,302 18,296" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,290 182,296 176,302 170,296" fill="'+c.ca+'" opacity="0.6"/>'
+    // séparateur orné
+    +'<line x1="28" y1="232" x2="172" y2="232" stroke="'+c.ca+'" stroke-width="0.8"/>'
+    +'<line x1="28" y1="235" x2="172" y2="235" stroke="'+c.c2+'" stroke-width="0.3"/>'
+    +'<circle cx="100" cy="233" r="3" fill="'+c.ca+'" opacity="0.8"/>'
+    +'<polygon points="30,233 36,229 36,237" fill="'+c.ca+'" opacity="0.5"/>'
+    +'<polygon points="170,233 164,229 164,237" fill="'+c.ca+'" opacity="0.5"/>'
+    // textes
+    +'<text x="100" y="250" text-anchor="middle" dominant-baseline="central" font-size="9" fill="'+c.no+'" font-family="serif" letter-spacing="2">'+nom.toUpperCase()+'</text>'
+    +'<text x="100" y="265" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif" letter-spacing="1">'+num+'</text>'
     +'</svg>'
 }
 
@@ -393,14 +443,27 @@ var CHESS = {Valet:'&#9817;',Cavalier:'&#9816;',Dame:'&#9813;',Roi:'&#9812;'}
 function svgFig(sym, val, nom, inv) {
   var c = C(inv), ch = CHESS[val]||'&#9823;'
   return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
-    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
-    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
-    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
-    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="148" fill="'+c.au+'" opacity=".15" font-family="serif">'+ch+'</text>'
-    +'<text x="100" y="155" text-anchor="middle" dominant-baseline="central" font-size="44" font-family="serif">'+sym+'</text>'
-    +'<line x1="30" y1="245" x2="170" y2="245" stroke="'+c.c2+'" stroke-width=".5"/>'
-    +'<text x="100" y="260" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif">'+nom.toUpperCase()+'</text>'
-    +'<text x="100" y="274" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif">'+val+'</text>'
+    +'<rect width="200" height="320" rx="12" fill="'+c.bg+'"/>'
+    +'<rect x="6" y="6" width="188" height="308" rx="10" fill="none" stroke="'+c.ca+'" stroke-width="1.5"/>'
+    +'<rect x="12" y="12" width="176" height="296" rx="8" fill="none" stroke="'+c.c2+'" stroke-width="0.6"/>'
+    +'<rect x="16" y="16" width="168" height="288" rx="6" fill="none" stroke="'+c.ca+'" stroke-width="0.3" opacity="0.4"/>'
+    // chess en fond
+    +'<text x="100" y="148" text-anchor="middle" dominant-baseline="central" font-size="160" fill="'+c.au+'" opacity=".12" font-family="serif">'+ch+'</text>'
+    // emoji couleur
+    +'<text x="100" y="148" text-anchor="middle" dominant-baseline="central" font-size="54" font-family="serif">'+sym+'</text>'
+    // ornements coins
+    +'<polygon points="24,18 30,24 24,30 18,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,18 182,24 176,30 170,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="24,290 30,296 24,302 18,296" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,290 182,296 176,302 170,296" fill="'+c.ca+'" opacity="0.6"/>'
+    // séparateur orné
+    +'<line x1="28" y1="240" x2="172" y2="240" stroke="'+c.ca+'" stroke-width="0.8"/>'
+    +'<line x1="28" y1="243" x2="172" y2="243" stroke="'+c.c2+'" stroke-width="0.3"/>'
+    +'<circle cx="100" cy="241" r="3" fill="'+c.ca+'" opacity="0.8"/>'
+    +'<polygon points="30,241 36,237 36,245" fill="'+c.ca+'" opacity="0.5"/>'
+    +'<polygon points="170,241 164,237 164,245" fill="'+c.ca+'" opacity="0.5"/>'
+    +'<text x="100" y="258" text-anchor="middle" dominant-baseline="central" font-size="9" fill="'+c.no+'" font-family="serif" letter-spacing="2">'+nom.toUpperCase()+'</text>'
+    +'<text x="100" y="272" text-anchor="middle" dominant-baseline="central" font-size="7" fill="'+c.nu+'" font-family="serif">'+val+'</text>'
     +'</svg>'
 }
 
@@ -417,14 +480,25 @@ var TRAME = {
 }
 function svgNum(sym, nom, val, inv) {
   var c = C(inv), n = val==='As'?1:parseInt(val), pos = TRAME[n]||[[100,155]], s=''
-  for(var i=0;i<pos.length;i++) s+='<text x="'+pos[i][0]+'" y="'+pos[i][1]+'" text-anchor="middle" dominant-baseline="central" font-size="24" font-family="serif">'+sym+'</text>'
+  for(var i=0;i<pos.length;i++) s+='<text x="'+pos[i][0]+'" y="'+pos[i][1]+'" text-anchor="middle" dominant-baseline="central" font-size="26" font-family="serif">'+sym+'</text>'
   return '<svg viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">'
-    +'<rect width="200" height="320" rx="10" fill="'+c.bg+'"/>'
-    +'<rect x="8" y="8" width="184" height="304" rx="7" fill="none" stroke="'+c.ca+'" stroke-width="1"/>'
-    +'<rect x="14" y="14" width="172" height="292" rx="5" fill="none" stroke="'+c.c2+'" stroke-width=".5"/>'
+    +'<rect width="200" height="320" rx="12" fill="'+c.bg+'"/>'
+    +'<rect x="6" y="6" width="188" height="308" rx="10" fill="none" stroke="'+c.ca+'" stroke-width="1.5"/>'
+    +'<rect x="12" y="12" width="176" height="296" rx="8" fill="none" stroke="'+c.c2+'" stroke-width="0.6"/>'
+    +'<rect x="16" y="16" width="168" height="288" rx="6" fill="none" stroke="'+c.ca+'" stroke-width="0.3" opacity="0.4"/>'
     +s
-    +'<line x1="30" y1="274" x2="170" y2="274" stroke="'+c.c2+'" stroke-width=".5"/>'
-    +'<text x="100" y="285" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+c.no+'" font-family="serif">'+nom.toUpperCase()+' '+val+'</text>'
+    // ornements coins
+    +'<polygon points="24,18 30,24 24,30 18,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,18 182,24 176,30 170,24" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="24,290 30,296 24,302 18,296" fill="'+c.ca+'" opacity="0.6"/>'
+    +'<polygon points="176,290 182,296 176,302 170,296" fill="'+c.ca+'" opacity="0.6"/>'
+    // séparateur orné
+    +'<line x1="28" y1="274" x2="172" y2="274" stroke="'+c.ca+'" stroke-width="0.8"/>'
+    +'<line x1="28" y1="277" x2="172" y2="277" stroke="'+c.c2+'" stroke-width="0.3"/>'
+    +'<circle cx="100" cy="275" r="3" fill="'+c.ca+'" opacity="0.8"/>'
+    +'<polygon points="30,275 36,271 36,279" fill="'+c.ca+'" opacity="0.5"/>'
+    +'<polygon points="170,275 164,271 164,279" fill="'+c.ca+'" opacity="0.5"/>'
+    +'<text x="100" y="291" text-anchor="middle" dominant-baseline="central" font-size="9" fill="'+c.no+'" font-family="serif" letter-spacing="2">'+nom.toUpperCase()+' · '+val+'</text>'
     +'</svg>'
 }
 
@@ -548,26 +622,27 @@ var jalons = []
 function sauvegarder() {
   if (tirage.length === 0) return
   var num = jalons.length + 1
-  var snapshot = tirage.map(function(t) {
-    return { c: t.c, inv: t.inv }
-  })
+  var snapshot = tirage.map(function(t) { return { c: t.c, inv: t.inv } })
   jalons.push({ num: num, cartes: snapshot })
   renduJalons()
 }
 function renduJalons() {
   var el = document.getElementById('jalons')
   el.innerHTML = ''
-  for (var i = 0; i < jalons.length; i++) {
+  for (var i = jalons.length - 1; i >= 0; i--) {
     var j = jalons[i];
-    (function(jj) {
+    (function(jj, idx) {
       var div = document.createElement('div')
       div.className = 'jalon'
-      div.title = 'Cliquer pour recharger ce tirage'
-      var noms = jj.cartes.map(function(t) { return nomCarte(t.c) + (t.inv ? ' ↕' : ' ↑') }).join(' · ')
-      div.innerHTML = '<div class="jalon-num">✦ Tirage ' + jj.num + '</div><div class="jalon-cartes">' + noms + '</div>'
-      div.onclick = function() { chargerJalon(jj) }
+      div.innerHTML = '<div class="jalon-header"><span class="jalon-num">✦ Tirage ' + jj.num + '</span><button class="jalon-del" title="Supprimer">✕</button></div>'
+      div.querySelector('.jalon-num').onclick = function() { chargerJalon(jj) }
+      div.querySelector('.jalon-del').onclick = function(e) {
+        e.stopPropagation()
+        jalons.splice(idx, 1)
+        renduJalons()
+      }
       el.appendChild(div)
-    })(j)
+    })(j, i)
   }
 }
 function chargerJalon(j) {
